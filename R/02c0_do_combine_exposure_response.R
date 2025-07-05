@@ -1,35 +1,25 @@
-#' Calculate pop-weighted exposure, aggregate and merge with study population data
-#'
-#' @param dt_study_pop_health A data table of the study population and expected impact by SA2, age group, year.
-#' @param dt_env_counterfactual A data table of the environmental exposure (value), counterfactual scenario (cf) and calculated delta, by year and spatial unit
-#' @param dt_exp_pop A data table of spatial unit population
-#'
-#' @return A data table of dt_study_pop_health with attached population-weighted exposures for baseline (x) and counterfactual (v1) scenarios, by year and SA2.
- 
-# tar_source("config.R")
-# dt_study_pop_health <- tar_read(data_study_pop_health)
-# dt_env_counterfactual <- tar_read(combined_exposures)
-# dt_exp_pop <- tar_read(data_study_pop_health)
-# gid <- GADM_gid <- c("ID_1", "NAME_1")
-# mapping_f <- sprintf("mapping_files/%s_gid_map.csv", country_code)
+# targets::tar_workspace(data_combine_exposure_response)
 
 do_combine_exposure_response <- function(
-  dt_study_pop_health,
-  dt_env_counterfactual,
-  dt_exp_pop,
-  gid,
-  mapping_f = NULL){
+    data_tidy_mortality,
+    data_tidy_mortality_pop,
+    data_calc_exposure_by_geography, 
+    data_construct_counterfactual,
+    file_mapping){
   
-  if(!is.null(mapping_f)){
-    dt_map <- fread(mapping_f)
-    dt_expo <- merge(dt_study_pop_health[, .(location_name, sex_name, age_5y_group, year, estimated_pop)], dt_map, 
+  ## read mapping of GADM and IHME location names
+  dt_map <- fread(file_mapping)
+  
+  # Merge ####
+  # Use GADM names when merging IHME and GADM data together
+  
+  dt_expo <- merge(dt_study_pop_health[, .(location_name, sex_name, age_5y_group, year, estimated_pop)], dt_map, 
                      by.x = "location_name", by.y = "ihme_name")
     dt_expo <- merge(dt_expo, dt_env_counterfactual,
-                     by.x = c("gdam_name", "year"), 
+                     by.x = c("gdam_name", "year"),
                      by.y = c("NAME_1", "year"), allow.cartesian = T)
     dt_expo[, gdam_name := NULL]
-  }
-  
+
   #### population-weighted exposures ####
   dt_expo <- merge(dt_env_counterfactual, dt_exp_pop, by = gid)
   dt_expo_agg <- dt_expo[, .(

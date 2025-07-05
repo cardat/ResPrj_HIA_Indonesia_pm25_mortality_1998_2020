@@ -1,4 +1,4 @@
-# targets::workspace(data_attributable_number)
+# targets::tar_workspace(data_attributable_number)
 
 do_attributable_number <- function(
 ){

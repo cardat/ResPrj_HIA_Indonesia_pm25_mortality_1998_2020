@@ -48,6 +48,11 @@ list(
              file.path(indir.geography, infile.geography),
              format = "file"),
   
+  # mapping file for province names
+  tar_target(file_mapping,
+             "metadata/ihme_gadm_locname_map.csv",
+             format = "file"),
+  
   
   # DATA CLEANING/TRANSFORMATION -------------------------------------------
   
@@ -98,9 +103,11 @@ list(
   tar_target(
     data_combine_exposure_response,
     do_combine_exposure_response(
-      data_health = data_tidy_mortality,
-      data_counterfactual = data_construct_counterfactual,
-      data_population = data_tidy_population
+      data_tidy_mortality = data_tidy_mortality,
+      data_tidy_mortality_pop = data_tidy_mortality_pop,
+      data_calc_exposure_by_geography = data_calc_exposure_by_geography, 
+      data_construct_counterfactual = data_construct_counterfactual,
+      file_mapping = file_mapping
     ),
     format = "file"
   ), 

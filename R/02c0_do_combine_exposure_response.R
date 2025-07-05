@@ -12,32 +12,19 @@ do_combine_exposure_response <- function(
   
   # Merge ####
   # Use GADM names when merging IHME and GADM data together
+  # IHME - location
+  # GADM - country_name, province
+  dt_combined <- dt_map[, .(location, country_name, province)]
   
-  dt_expo <- merge(dt_study_pop_health[, .(location_name, sex_name, age_5y_group, year, estimated_pop)], dt_map, 
-                     by.x = "location_name", by.y = "ihme_name")
-    dt_expo <- merge(dt_expo, dt_env_counterfactual,
-                     by.x = c("gdam_name", "year"),
-                     by.y = c("NAME_1", "year"), allow.cartesian = T)
-    dt_expo[, gdam_name := NULL]
+  # add mortality and population
+  dt_combined <- dt_combined[data_tidy_mortality, on = .(location)]
+  dt_combined <- dt_combined[data_tidy_mortality_pop, on = .NATURAL]
+  
+  # add exposure and counterfactual
+  dt_combined <- dt_combined[data_construct_counterfactual, on = .(country_name, province, year)]
+  
+  # drop IHME name
+  dt_combined[, location := NULL]
 
-  #### population-weighted exposures ####
-  dt_expo <- merge(dt_env_counterfactual, dt_exp_pop, by = gid)
-  dt_expo_agg <- dt_expo[, .(
-    x = sum(value * pop, na.rm = T) / sum(pop, na.rm = T),
-    v1 = sum(delta * pop, na.rm = T) / sum(pop, na.rm = T),
-    pop = sum(pop, na.rm = T)
-    ),
-    by = c(gid, "year", "variable")]
-  # some x and v1 are NaN since 0 pop present
-  
-  #### merge with population response ####
-  dt <- merge(dt_study_pop_health, 
-              dt_expo_agg[, .(sa2_main16, year, variable, x, v1)],
-              by = c("sa2_main16", "year"))
-  
-  return(dt)
+  return(dt_combined)
 }
-
-# dt_study_pop_health <- tar_read(data_study_pop_health)
-# dt_env_counterfactual <- tar_read(combined_exposures)
-# dt_exp_pop <- tar_read(tidy_exp_pop)

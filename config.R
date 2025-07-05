@@ -10,8 +10,10 @@ out.combined_data <- file.path(outdir,
                                sprintf("IDN_combined_data_%s.csv", runDate))
 
 # final HIA output
-out.hia <- file.path(outdir,
-                     sprintf("IDN_HIA_%s.csv", runDate))
+out.hia_an <- file.path(outdir,
+                     sprintf("IDN_attributable_number_%s.csv", runDate))
+out.hia_life_tables <- file.path(outdir,
+                                 sprintf("IDN_life_tables_%s.csv", runDate))
 
 # Define parameters -------------------------------------------------------
 # YEARS - range between 1998 and 2020 (years of obtained data)

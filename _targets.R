@@ -73,7 +73,7 @@ list(
   tar_target(data_tidy_mortality_pop,
              do_tidy_mortality_pop(data_tidy_mortality = data_tidy_mortality)),
   
-  ### data_calculate_exposure_by_geography ####
+  ### data_calc_exposure_by_geography ####
   tar_target(
     data_calc_exposure_by_geography,
     do_calc_exposure_by_geography(
@@ -86,7 +86,7 @@ list(
   
   ## Counterfactual scenario ####
   
-  ### data_make_counterfactual ####
+  ### data_construct_counterfactual ####
   ## Set scenario, calculate delta
   tar_target(
     data_construct_counterfactual,
@@ -105,12 +105,16 @@ list(
     do_combine_exposure_response(
       data_tidy_mortality = data_tidy_mortality,
       data_tidy_mortality_pop = data_tidy_mortality_pop,
-      data_calc_exposure_by_geography = data_calc_exposure_by_geography, 
+      # data_calc_exposure_by_geography = data_calc_exposure_by_geography, 
       data_construct_counterfactual = data_construct_counterfactual,
       file_mapping = file_mapping
-    ),
-    format = "file"
+    )
   ), 
+  tar_target(
+    file_combine_exposure_response,
+    fwrite(data_combine_exposure_response, out.combined_data),
+    format = "file"
+  ),
 
     
   # ANALYSIS ---------------------------------------------------------------
@@ -120,26 +124,27 @@ list(
   #### health_impact_function ####
   tar_target(health_impact_function,
              do_health_impact_function(
-               case_definition = 'crd',
-               exposure_response_func = c(1.06, 1.02, 1.08),
+               exposure_response_func = c(1.062, 1.040, 1.083),
                theoretical_minimum_risk = 0
                )
   ),
   
   ## calculate health impacts ####
   ### data_attributable_number ####
-  tar_target(data_attributable_number,
+  tar_target(file_attributable_number,
              do_attributable_number(
                hif = health_impact_function,
                data_combine_exposure_response = data_combine_exposure_response,
-               minimum_age = 30
+               minimum_age = 30,
+               outfile = out.hia_an
              ),
              format = "file"
   ),
   ### data_life_tables ####
-  tar_target(data_life_tables,
+  tar_target(file_life_tables,
              do_life_tables(
-               data_combine_exposure_response = data_combine_exposure_response
+               data_combine_exposure_response = data_combine_exposure_response,
+               outfile = out.hia_life_tables
              ),
              format = "file"
   ),
@@ -147,7 +152,7 @@ list(
   # VISUALISE ------------------------------------------------------------
   tar_target(fig_attributable_number,
              viz_attributable_number(
-               data_attributable_number = data_attributable_number,
+               file_attributable_number = file_attributable_number,
                file_tidy_geography = file_tidy_geography
              ),
              format = "file"

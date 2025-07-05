@@ -3,7 +3,6 @@
 do_tidy_mortality_pop <- function(data_tidy_mortality){
   
   dat <- data_tidy_mortality[, .(pop = number / (rate/100000)), by = .(measure, location, sex, age, cause, year)]
-  # dat3[, .(pop = sum(pop)), by = .(year, location_name)][order(pop)]
   
   return(dat)
 }

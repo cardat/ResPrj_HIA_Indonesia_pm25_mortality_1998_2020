@@ -6,7 +6,7 @@
 ##     GADM (administrative boundaries)
 ##     IHME (all-cause mortality, also derived population)
 ## 
-## Cassandra Yuen (2025-07-03)
+## 
 ##
 #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
@@ -28,6 +28,7 @@ tar_option_set(
                "iomlifetR",
                "leaflet",
                "ggplot2"),
+  workspace_on_error = TRUE,
   error = "continue"
 )
 
@@ -130,92 +131,67 @@ list(
   ),
   
   ## calculate health impacts ####
-  ### data_attributable_number ####
-  tar_target(file_attributable_number,
-             do_attributable_number(
+  ### data_attributable_number_alt ####
+  # manual calculation of attributable number
+  tar_target(data_attributable_number_alt,
+             do_attributable_number_alt(
                hif = health_impact_function,
                data_combine_exposure_response = data_combine_exposure_response,
-               minimum_age = 30,
-               outfile = out.hia_an
-             ),
-             format = "file"
+               minimum_age = 30
+             )
   ),
+  
+  ### data_attributable_number ####
+  # attributable number from iomlifetR
+  tar_target(data_attributable_number,
+             do_attributable_number(
+               data_combine_exposure_response = data_combine_exposure_response
+             )
+  ),
+  
+  
   ### data_life_tables ####
-  tar_target(file_life_tables,
-             do_life_tables(
-               data_combine_exposure_response = data_combine_exposure_response,
-               outfile = out.hia_life_tables
-             ),
-             format = "file"
+  # life tables from iomlifetR
+  tar_target(data_life_table,
+             do_life_table(
+               data_combine_exposure_response = data_combine_exposure_response
+             )
+  ),
+  ### data_le ####
+  # life expectancy from iomlifetR
+  tar_target(data_le,
+             do_le(
+               data_combine_exposure_response = data_combine_exposure_response
+             )
+  ),
+  
+  ### data_yll ####
+  # years of life lost from iomlifetR
+  tar_target(data_yll,
+             do_yll(
+               data_attributable_number = data_attributable_number,
+               data_le = data_le
+             )
   ),
   
   # VISUALISE ------------------------------------------------------------
+  ###
   tar_target(fig_attributable_number,
              viz_attributable_number(
-               file_attributable_number = file_attributable_number,
+               data_attributable_number_alt = data_attributable_number_alt,
                file_tidy_geography = file_tidy_geography
              ),
              format = "file"
-  )#
+  )#,
   
   
   # REPORTS --------------------------------------------------------------
   # render a summary of pipeline
-  # tar_render(report_targets, "rmarkdown/report_targets.Rmd")
+  # tar_render(report_targets, "rmarkdown/report_targets.Rmd"),
   
-  # render report
+  # render an Rmarkdown report
+  # tar_render(report, "report.Rmd")
+  
 )
 
  
-## Visualise OLD
-# 
-# viz <- list(
-#   # create map of attributable number, faceted by year (with ggplot2)
-#   tar_target(
-#     viz_an,
-#     {
-#       # summarise data and merge with spatial for plotting
-#       dat_an <- calc_attributable_number
-#       dat_an <- dat_an[,.(pop_tot = sum(pop_study, na.rm = T),
-#                           expected_tot = sum(expected, na.rm = T),
-#                           attributable = sum(attributable, na.rm = T),
-#                           pm25_cf_pw_sa2 = mean(v1, na.rm = T),
-#                           pm25_pw_sa2 = mean(x, na.rm = T)),
-#                        by = .(sa2_main16, year)]
-#       sf_an <- tidy_geom_sa2_2016
-#       sf_an <- merge(sf_an, dat_an)
-#       viz_map_an(sf_an)
-#     }
-#   ),
-#   
-#   # leaflet map of attributable number, summed over SA2s, averaged over years (with leaflet)
-#   tar_target(
-#     leaflet_an,
-#     {
-#       # get and summarise data
-#       dat_an <- calc_attributable_number
-#       dat_an <- dat_an[,.(pop_tot = sum(pop_study, na.rm = T),
-#                           expected_tot = sum(expected, na.rm = T),
-#                           attributable = sum(attributable, na.rm = T),
-#                           pm25_cf = mean(v1, na.rm = T),
-#                           pm25 = mean(x, na.rm = T)),
-#                        by = .(sa2_main16, year)]
-#       # aggregate over years (mean)
-#       dat_an <- dat_an[,.(pop_tot = mean(pop_tot),
-#                           expected_tot = mean(expected_tot),
-#                           attributable = mean(attributable),
-#                           pm25_cf = mean(pm25_cf),
-#                           pm25 = mean(pm25)),
-#                        by = .(sa2_main16)]
-#       
-#       # merge with spatial for plotting
-#       sf_an <- merge(tidy_geom_sa2_2016, dat_an)
-#       sf_an <- st_simplify(sf_an, dTolerance = 75)
-#       viz_leaflet_an(sf_an)
-#     }
-#   ),
-#   
-    
-#   # render an Rmarkdown report
-#   tar_render(report, "report.Rmd")
-# )

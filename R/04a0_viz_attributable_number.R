@@ -1,14 +1,14 @@
 # targets::tar_workspace(fig_attributable_number)
 
 viz_attributable_number <- function(
-    file_attributable_number,
+    data_attributable_number_alt,
     file_tidy_geography
 ){
   v <- vect(file_tidy_geography)
   # simplify for plotting
   v <- terra::simplifyGeom(v, 0.01)
   
-  dat_attributable <- fread(file_attributable_number)
+  dat_attributable <- data_attributable_number_alt
   
   # total by year and province
   dat_total_an.yy <- dat_attributable[, .(attributable = sum(attributable)), by = .(country_name, province, cause, year)]

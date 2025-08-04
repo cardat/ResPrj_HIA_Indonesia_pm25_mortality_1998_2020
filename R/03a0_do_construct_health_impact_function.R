@@ -2,11 +2,11 @@
 
 do_health_impact_function <- function(
   exposure_response_func = c(1.062, 1.040, 1.083), # from HRAPIE project, with lower and upper bounds
-  theoretical_minimum_risk = 0
+  theoretical_minimum_risk = 0,
+  unit_change = 10
 ){
   
-  # this is a relative risk per 10 unit change
-  unit_change <- 10
+  ## relative risk per ? unit change
   beta <- log(exposure_response_func)/unit_change
   beta
   # e.g. if unit change is 10
@@ -17,11 +17,14 @@ do_health_impact_function <- function(
   resp_func <- function(x){
     
     response <- sapply(x, function(i) {
+      # return NA if don't have i
+      if (is.nan(i) | is.na(i)) return(c(NA, NA, NA))
+      
       # no attribution if below theoretical minimum risk
       if(i < theoretical_minimum_risk){
         return(c(0,0,0))
       } else {
-        exp(beta * i) - 1
+        (exp(beta * i)-1)/exp(beta * i)
       }
     })
     

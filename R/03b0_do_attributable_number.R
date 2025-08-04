@@ -5,8 +5,8 @@ do_attributable_number <- function(
 ){
   # deaths and population by age group (aggregate sex)
   demographic_data <- data_combine_exposure_response[
-    , .(deaths = sum(value), population = sum(pop))
-    , by = .(country_name, province, age, sex, year)]
+    , .(deaths = sum(count), population = sum(pop))
+    , by = .(country_name, province, age, sex, year, delta)]
   
   # start age of age group for input to iomlifetR
   demographic_data[age == "<5 years", age := "0-5"]
@@ -15,10 +15,10 @@ do_attributable_number <- function(
   
   dat_an <- iomlifetR::burden_an(
     demog_data = demographic_data, 
-    min_age_at_risk = 30, 
-    pm_concentration = data_combine_exposure_response[, delta],
-    RR = rr,
-    unit = 10
+    min_age_at_risk = minimum_age_risk, 
+    pm_concentration = demographic_data[, delta],
+    RR = rr[1],
+    unit = units_rr_per
   )
   
   return(dat_an)

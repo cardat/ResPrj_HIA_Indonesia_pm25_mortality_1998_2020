@@ -25,6 +25,9 @@ do_combine_exposure_response <- function(
   
   # drop IHME name
   dt_combined[, location := NULL]
+  
+  setnames(dt_combined, "number", "count")
+  setnames(dt_combined, "value", "exposure_value")
 
   return(dt_combined)
 }

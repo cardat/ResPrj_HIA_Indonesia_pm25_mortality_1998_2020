@@ -7,7 +7,7 @@ do_life_table <- function(
   ages <- data_combine_exposure_response[, as.integer(gsub("([0-9]+).+", "\\1", age))]
   ages[is.na(ages)] <- 0
   
-  hazard <- data_combine_exposure_response[, number / pop] 
+  hazard <- data_combine_exposure_response[, count / pop] 
   
   dat_life_table <- iomlifetR::life_table(
     hazard = hazard,

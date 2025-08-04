@@ -42,7 +42,22 @@ infile.pm25 <- sprintf("V5GL02.HybridPM25.Global.%04i01-%04i12.nc",
 
 infile.locname_map <- "metadata/ihme_gadm_locname_map.csv"
 
-# PARAMETERS ####
+# Output paths ------------------------------------------------------------
+outdirs <- list(data = "data_derived",
+                figs_tabs = "figs_and_tabs",
+                qc = "qc")
+
+
+# PARAMETERS ------------------------------------------------------------
 
 # Relative risk
-rr <- 1.06
+rr <- c(1.062, 1.040, 1.083)
+# relative risk per x units change
+units_rr_per <- 10
+theoretical_minimum_risk <- 0
+
+# minimum age at risk
+minimum_age_risk <- 30
+
+
+

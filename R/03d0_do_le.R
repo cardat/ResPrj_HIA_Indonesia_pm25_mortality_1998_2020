@@ -7,7 +7,7 @@ do_le <- function(
   
   # deaths and population by age group (aggregate sex)
   demographic_data <- data_combine_exposure_response[
-    , .(deaths = sum(value), population = sum(pop))
+    , .(deaths = sum(count), population = sum(pop))
     , by = .(country_name, province, age, sex, year)]
   
   # start age of age group for input to iomlifetR
@@ -18,10 +18,10 @@ do_le <- function(
   # calculate life expectancy from birth
   dat_le <- iomlifetR::burden_le(
     demog_data = demographic_data,
-    min_age_at_risk = 30,
+    min_age_at_risk = minimum_age_risk,
     pm_concentration = data_combine_exposure_response[, delta],
-    RR = rr,
-    unit = 10
+    RR = rr[1],
+    unit = units_rr_per
   )
   
   return(dat_le)

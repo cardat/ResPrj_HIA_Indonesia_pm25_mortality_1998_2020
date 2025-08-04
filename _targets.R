@@ -26,8 +26,9 @@ tar_option_set(
                "terra",
                "data.table",
                "iomlifetR",
-               "leaflet",
-               "ggplot2"),
+               # "leaflet",
+               # "ggplot2",
+               "tmap"),
   workspace_on_error = TRUE,
   error = "continue"
 )
@@ -125,9 +126,9 @@ list(
   #### health_impact_function ####
   tar_target(health_impact_function,
              do_health_impact_function(
-               exposure_response_func = c(1.062, 1.040, 1.083),
-               theoretical_minimum_risk = 0
-               )
+               exposure_response_func = rr,
+               theoretical_minimum_risk = theoretical_minimum_risk,
+               unit_change = units_rr_per)
   ),
   
   ## calculate health impacts ####
@@ -175,16 +176,54 @@ list(
   ),
   
   # VISUALISE ------------------------------------------------------------
-  ###
-  tar_target(fig_attributable_number,
-             viz_attributable_number(
+ 
+  ### Plot these years in faceted data maps
+  tar_target(qc_yy,
+             2015:2020),
+  
+  # Population, mortality, exposure
+  tar_target(fig_map_inputs,
+             viz_map_inputs(
+               data_combine_exposure_response = data_combine_exposure_response,
+               file_tidy_geography = file_tidy_geography,
+               yy = 2020,
+               outdir = outdirs$figs_tabs
+             ),
+             format = "file",),
+  # Population, mortality, exposure
+  tar_target(fig_map_inputs_facet,
+             viz_map_inputs_facet(
+               data_combine_exposure_response = data_combine_exposure_response,
+               file_tidy_geography = file_tidy_geography,
+               yy = qc_yy,
+               outdir = outdirs$figs_tabs
+             ),
+             format = "file"),
+  
+  ### from manual calcalation of attributable number
+  tar_target(fig_map_attributable_number_alt,
+             viz_map_attributable_number_alt(
                data_attributable_number_alt = data_attributable_number_alt,
-               file_tidy_geography = file_tidy_geography
+               file_tidy_geography = file_tidy_geography,
+               yy = qc_yy,
+               outdir = outdirs$figs_tabs
+             ),
+             format = "file"
+  ),
+  
+  ### from iomlifetR function for attributable number
+  tar_target(fig_map_attributable_number,
+             viz_map_attributable_number(
+               data_combine_exposure_response = data_combine_exposure_response, 
+               data_attributable_number = data_attributable_number,
+               file_tidy_geography = file_tidy_geography,
+               yy = qc_yy,
+               outdir = outdirs$figs_tabs
              ),
              format = "file"
   )#,
   
-  
+
   # REPORTS --------------------------------------------------------------
   # render a summary of pipeline
   # tar_render(report_targets, "rmarkdown/report_targets.Rmd"),

@@ -1,0 +1,71 @@
+---
+title: "Pipeline status"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+date: "`r Sys.Date()`"
+params:
+  project_name: NULL
+---
+
+```{r project, echo = F, results = "asis"}
+if(!is.null(params$project_name)) cat("Pipeline status of project", params$project_name)
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message=FALSE)
+knitr::opts_knit$set(root.dir = '../')
+```
+
+
+## `targets` status
+
+Targets network, with runtime and number of branches (if any) indicated.
+
+```{r targets_pipeline, out.width="100%"}
+# show targets network, only targets and exclude target rendering this document
+targets::tar_visnetwork(targets_only = T, 
+                        exclude = pipeline_status, 
+                        label = c("time", "branches"),
+                        reporter = "silent") |> 
+  visNetwork::visIgraphLayout("layout_with_kk", smooth = TRUE, physics = TRUE) |>
+  visNetwork::visPhysics(hierarchicalRepulsion = list(nodeDistance = 150))
+```
+
+### Target metadata
+
+Indicating:
+
+- `name` target name
+- `type` type of target object
+- `iteration` iteration/aggregation mode of object
+- `time` last modified time of target stored object
+- `run_mins` Run time of target ()
+- `format` data storage format for target
+- `size_MB` total file size (MB) of target files
+
+See `tar_meta` documentation for more.
+
+```{r targets-meta}
+# show table of targets metadata (subsetted and more readable) and exclude branches (keep the patterns)
+meta <- tar_meta(fields = c("name", "type", "time", "seconds", "bytes", "format", "iteration"))
+meta$size_MB <- round(meta$bytes / 1000**2, 1)
+meta$run_mins <- round(meta$seconds / 60, 1)
+# do not show global objects, functions or individual branches
+meta <- meta[!meta$type %in% c("branch", "object", "function"), ]
+
+DT::datatable(meta[, c("name", "type", "iteration", "time", "run_mins", "format", "size_MB")],
+              options = list(pageLength = 25, 
+                             order = list(c(1, "desc"),
+                                          c(0, "asc"))
+                             ), 
+              rownames = FALSE)
+```
+
+## Session Info
+
+```{r session-info}
+# show session info for reproducibility
+sessionInfo()
+```

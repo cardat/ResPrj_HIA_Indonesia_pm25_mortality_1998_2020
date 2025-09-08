@@ -221,12 +221,12 @@ list(
                outdir = outdirs$figs_tabs
              ),
              format = "file"
-  )#,
+  ),
   
 
   # REPORTS --------------------------------------------------------------
   # render a summary of pipeline
-  # tar_render(report_targets, "rmarkdown/report_targets.Rmd"),
+  tar_render(report_targets, "pipeline_status/report_run.Rmd")
   
   # render an Rmarkdown report
   # tar_render(report, "report.Rmd")

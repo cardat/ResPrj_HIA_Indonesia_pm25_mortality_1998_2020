@@ -30,6 +30,7 @@ tar_option_set(
                # "ggplot2",
                "tmap"),
   workspace_on_error = TRUE,
+  workspaces = "fig_map_inputs_facet",
   error = "continue"
 )
 
@@ -52,7 +53,7 @@ list(
   
   # mapping file for province names
   tar_target(file_mapping,
-             "metadata/ihme_gadm_locname_map.csv",
+             infile.locname_map,
              format = "file"),
   
   
@@ -181,6 +182,7 @@ list(
   tar_target(qc_yy,
              2015:2020),
   
+  ## fig_map_inputs ####
   # Population, mortality, exposure
   tar_target(fig_map_inputs,
              viz_map_inputs(
@@ -190,6 +192,7 @@ list(
                outdir = outdirs$figs_tabs
              ),
              format = "file",),
+  ## fig_map_inputs_facet ####
   # Population, mortality, exposure
   tar_target(fig_map_inputs_facet,
              viz_map_inputs_facet(
@@ -200,6 +203,7 @@ list(
              ),
              format = "file"),
   
+  ## fig_map_attributable_number_alt ####
   ### from manual calcalation of attributable number
   tar_target(fig_map_attributable_number_alt,
              viz_map_attributable_number_alt(
@@ -211,6 +215,7 @@ list(
              format = "file"
   ),
   
+  ## fig_map_attributable_number ####
   ### from iomlifetR function for attributable number
   tar_target(fig_map_attributable_number,
              viz_map_attributable_number(
@@ -225,11 +230,13 @@ list(
   
 
   # REPORTS --------------------------------------------------------------
-  # render a summary of pipeline
-  tar_render(report_targets, "pipeline_status/report_run.Rmd")
+  ## report_targets ####
+  # render a summary of pipeline status
+  tar_render(report_targets, "pipeline_status/report_pipeline_status.Rmd"),
   
-  # render an Rmarkdown report
-  # tar_render(report, "report.Rmd")
+  ## report ####
+  # render an Rmarkdown report of the HIA
+  tar_render(report, "report/report.Rmd")
   
 )
 

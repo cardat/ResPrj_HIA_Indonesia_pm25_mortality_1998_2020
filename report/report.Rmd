@@ -1,0 +1,39 @@
+---
+title: "PM~2.5~ and all-cause mortality health impact assessment in Indonesia, 1998-2020"
+date: "`r Sys.Date()`"
+output: bookdown::html_document2
+---
+
+```{r setup, include=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+library(data.table)
+```
+
+## Health Impact Assessment
+
+<!-- In Indonesia, over years `r min(yys_todo)`-`r max(yys_todo)`, the mean exposure to PM~2.5~ is shown below by province. Toggle the radio button to show the attributable number of deaths, summed over age groups, then averaged across years. -->
+
+```{r plot-sa2, echo=FALSE}
+# targets::tar_read(leaflet_an) %>% leaflet::addProviderTiles("CartoDB.Positron")
+```
+
+Exposure to PM~2.5~, counterfactual PM~2.5~ concentration, expected mortality and attributable number of deaths for the year 2020 is shown in Table \@ref(tab:tbl-sample-year).
+
+```{r tbl-sample-year, echo=FALSE}
+data_exposure_health <- targets::tar_read(data_combine_exposure_response)
+dat_an <- targets::tar_read(data_attributable_number)
+
+data_exposure_health[, attributable := dat_an]
+data_exposure_health <- data_exposure_health[, .(
+  Population = sum(pop, na.rm = T),
+  "Expected Deaths" = sum(count, na.rm = T),
+  "Attributable Deaths" = sum(attributable, na.rm = T),
+  "Mean CF PM2.5 Exposure" = mean(counterfactual, na.rm = T),
+  "Mean baseline PM2.5 Exposure" = mean(exposure_value, na.rm = T)
+), by = .(Province = province, Year = year)]
+
+# show one year
+knitr::kable(data_exposure_health[Year == 2020],
+             caption = "Attributable number of deaths (PM2.5) by province for the year 2020 with average PM2.5 (μg/m3) population-weighted exposure for baseline case and counterfactual.",
+             digits = c(0,0,0,0,0,1,1))
+```

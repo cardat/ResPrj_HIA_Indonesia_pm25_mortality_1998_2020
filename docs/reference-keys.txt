@@ -4,5 +4,6 @@ getting-started
 software
 download-the-repository-code
 download-the-input-data
+using-the-gbd-results-tool
 run-the-pipeline
 user-guide

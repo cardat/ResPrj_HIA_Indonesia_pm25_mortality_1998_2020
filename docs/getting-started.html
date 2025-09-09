@@ -77,7 +77,10 @@
 <ul>
 <li class="chapter" data-level="3.1" data-path="getting-started.html"><a href="getting-started.html#software"><i class="fa fa-check"></i><b>3.1</b> Software</a></li>
 <li class="chapter" data-level="3.2" data-path="getting-started.html"><a href="getting-started.html#download-the-repository-code"><i class="fa fa-check"></i><b>3.2</b> Download the repository code</a></li>
-<li class="chapter" data-level="3.3" data-path="getting-started.html"><a href="getting-started.html#download-the-input-data"><i class="fa fa-check"></i><b>3.3</b> Download the input data</a></li>
+<li class="chapter" data-level="3.3" data-path="getting-started.html"><a href="getting-started.html#download-the-input-data"><i class="fa fa-check"></i><b>3.3</b> Download the input data</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="getting-started.html"><a href="getting-started.html#using-the-gbd-results-tool"><i class="fa fa-check"></i><b>3.3.1</b> Using the GBD Results Tool</a></li>
+</ul></li>
 <li class="chapter" data-level="3.4" data-path="getting-started.html"><a href="getting-started.html#run-the-pipeline"><i class="fa fa-check"></i><b>3.4</b> Run the pipeline</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="user-guide.html"><a href="user-guide.html"><i class="fa fa-check"></i><b>4</b> User Guide</a></li>
@@ -115,7 +118,7 @@
 <ul>
 <li>Modelled mortality data: <a href="https://www.healthdata.org/">Institute of Health Metrics and Evaluation (IHME)</a> via the <a href="https://vizhub.healthdata.org/gbd-results/">GBD Results Tool</a></li>
 <li>Modelled PM<sub>2.5</sub> exposure data: <a href="https://sites.wustl.edu/acag/">Atmospheric Composition Analysis Group (ACAG)</a> as part of the <a href="https://sites.wustl.edu/acag/datasets/surface-pm2-5/">SatPM2.5 (Satellite-derived PM2.5) dataset</a> (older versions archived)</li>
-<li>Geographical boundaries: <a href="https://gadm.org/index.html">Database of Global Administrative Area</a></li>
+<li>Geographical boundaries: <a href="https://gadm.org/index.html">Database of Global Administrative Areas</a></li>
 </ul>
 <p>Please <strong>note the licencing and conditions of use</strong> for each dataset before using them in your work.</p>
 <p>The specific dataset versions used in the development of the pipeline are available in the Cloud CARDAT repository to approved researchers.</p>
@@ -124,11 +127,32 @@
 <li>ACAG <a href="https://cardat.github.io/data_inventory/air_pollution_model_globalgwr_pm25.html#globalgwr_pm25_v5gl02_1998_2020">SatPM2.5 Global V5.GL.02</a></li>
 <li>GADM v4.0.4</li>
 </ul>
+<div id="using-the-gbd-results-tool" class="section level3 hasAnchor" number="3.3.1">
+<h3><span class="header-section-number">3.3.1</span> Using the GBD Results Tool<a href="getting-started.html#using-the-gbd-results-tool" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>You must register to search and download data from IHME’s GBD Results Tool. To retrieve the required variables for this pipeline, use the following search parameters:</p>
+<ul>
+<li><strong>GBM Estimate</strong>: Cause of death or injury</li>
+<li><strong>Measure</strong>: Deaths</li>
+<li><strong>Metric</strong>: Number, Rate</li>
+<li><strong>Cause</strong>: All causes</li>
+<li><strong>Location</strong>: <em>Select all</em> under Southeast Asia (including sub-national areas for Indonesia)</li>
+<li><strong>Age</strong>: <em>Select all</em></li>
+<li><strong>Sex</strong>: Male, Female</li>
+<li><strong>Total percentage change</strong>: Off</li>
+<li><strong>Year</strong>: All years from 1998 to 2021</li>
+</ul>
+</div>
 </div>
 <div id="run-the-pipeline" class="section level2 hasAnchor" number="3.4">
 <h2><span class="header-section-number">3.4</span> Run the pipeline<a href="getting-started.html#run-the-pipeline" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The pipeline is defined in the <code>_targets.R</code> file, while global objects are defined in <code>config.R</code>. Helper code designed to run interactively (line-by-line) is provided in <code>main.R</code> and can be used to examine, run and visualise the pipeline and its outputs.</p>
-<p>You must define the paths to the input files in <code>config.R</code>. All variables <code>indir.geography</code> and <code>infile.geography</code> (GADM data), <code>indir.mort</code> and <code>infile.mort</code> (IHME data), and <code>indir.pm25</code> and <code>infile.pm25</code> (ACAG data) must be provided and point to the corresponding input data files you have downloaded.</p>
+<p>You must define the paths to the input files in <code>config.R</code>. All variables</p>
+<ul>
+<li><code>indir.geography</code> and <code>infile.geography</code> (GADM data),</li>
+<li><code>indir.mort</code> and <code>infile.mort</code> (IHME data), and</li>
+<li><code>indir.pm25</code> and <code>infile.pm25</code> (ACAG data)</li>
+</ul>
+<p>must be provided and point to the corresponding input data files you have downloaded.</p>
 <p>The mapping of province names is included in this repository under the <code>metadata/</code> directory. Ensure the <code>infile.locname_map</code> variable is correctly defined for this mapping file.</p>
 
 </div>

@@ -51,8 +51,17 @@ outdirs <- list(data = "data_derived",
 
 # PARAMETERS ------------------------------------------------------------
 
-# Relative risk
-rr <- c(1.062, 1.040, 1.083)
+## Counterfactual scenario ####
+counterfactual_scenario_type <- "abs" # absolute / relative / modelled CTM concentrations
+counterfactual_scenario <- 10
+
+
+# Relative risk ####
+
+# from WHO Health risks of air pollution in Europe (HRAPIE) project recommendations (https://iris.who.int/handle/10665/153692)
+# Published in Hoek, et al. (2013), available at https:/doi.org/10.1186/1476-069x-12-43
+rr <- c(1.062, 1.040, 1.083) 
+
 # relative risk per x units change
 units_rr_per <- 10
 theoretical_minimum_risk <- 0

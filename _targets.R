@@ -93,8 +93,8 @@ list(
   tar_target(
     data_construct_counterfactual,
     do_construct_counterfactual(data_calc_exposure_by_geography = data_calc_exposure_by_geography,
-                                counterfactual_type = "abs",
-                                counterfactual_value = 10)
+                                counterfactual_type = counterfactual_scenario_type,
+                                counterfactual_value = counterfactual_scenario)
   ),
   
   

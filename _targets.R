@@ -22,15 +22,14 @@ tar_source()
 # Set targets options -----------------------------------------------------
 
 tar_option_set(
-  packages = c("sf", # packages to load before target builds
+  # packages to load before target builds
+  packages = c("sf", 
                "terra",
                "data.table",
                "iomlifetR",
-               # "leaflet",
-               # "ggplot2",
                "tmap"),
   workspace_on_error = TRUE,
-  workspaces = "fig_map_inputs_facet",
+  workspaces = "data_attributable_number",
   error = "continue"
 )
 

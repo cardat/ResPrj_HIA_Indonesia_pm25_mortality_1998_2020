@@ -35,35 +35,11 @@ tar_visnetwork(targets_only = T) |>
 # see results of specified target
 tar_read(data_attributable_number)
 
-## maps
-## with leaflet
-library(leaflet)
-tar_read(leaflet_an) %>% addProviderTiles("CartoDB.Positron")
-## with ggplot  
-# tar_read(viz_an)
-
 ## view report
 browseURL("report.html")
 
+
 # Debugging help ----------------------------------------------------------
 
-tar_meta(fields = warnings)
-tar_meta(fields = error)
-
-## lOad libraries here
-# library(data.table)
-# library(sf)
-# library(raster)
-
-## remove targets-generated files (_targets/ directory) (options to selectively remove objects, metadata, etc.)
-# tar_destroy() 
-
-## load target output from last successful build of target
-# tar_read(data_study_pop_health)
-
-## run a specific branch in debug mode - do not use callr_function = NULL in regular usage
-# tar_option_set(debug = "health_impact_function")
-# tar_make(names = health_impact_function, callr_function = NULL)
-
-# tar_manifest(fields = "command")
-# tar_glimpse(targets_only = FALSE)
+tar_meta(fields = warnings, complete_only = T)
+tar_meta(fields = error, complete_only = T)

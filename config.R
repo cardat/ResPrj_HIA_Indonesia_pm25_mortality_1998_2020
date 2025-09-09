@@ -1,5 +1,6 @@
 # Define key outputs ------------------------------------------------------
-runDate <- strftime(Sys.Date(), "%Y%m%d")
+# suffix identifier to output file names
+runDate <- "20250909"
 
 outdir <- "data_derived"
 

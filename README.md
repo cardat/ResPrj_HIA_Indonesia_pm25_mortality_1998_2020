@@ -2,7 +2,7 @@
 
 This is an [R targets](https://github.com/ropensci/targets) pipeline for the health impact assessment of PM<sub>2.5</sub> exposure in Indonesia on all-cause mortality. It has been developed on R 4.5.1 "Great Square Root" and RStudio 2025.05.1 "Mariposa Orchid". Input data is sourced from publicly available datasets only.
 
-The pipeline can be adapted to conduct a health impact assessment for a different region, time period and dataset sources. 
+The pipeline can be adapted to conduct a health impact assessment for a different region, time period and dataset sources. Read more at the attached [GitHub Pages](https://cardat.github.io/ResPrj_HIA_Indonesia_pm25_mortality_1998_2020/).
 
 ## Data
 

@@ -4,22 +4,38 @@ date: "`r Sys.Date()`"
 output: bookdown::html_document2
 ---
 
-```{r setup, include=FALSE, warning=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+```{r setup, include=FALSE}
+library(knitr)
 library(data.table)
+library(targets)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE)
+
 ```
 
 ## Health Impact Assessment
 
-<!-- In Indonesia, over years `r min(yys_todo)`-`r max(yys_todo)`, the mean exposure to PM~2.5~ is shown below by province. Toggle the radio button to show the attributable number of deaths, summed over age groups, then averaged across years. -->
+In Indonesia, the mean exposure to PM~2.5~ (for a subset of study years) is shown in Figure \@ref(fig:plt-exposure) by province. Mortality counts are displayed in Figure \@ref(fig:plt-mortality).
 
-```{r plot-sa2, echo=FALSE}
-# targets::tar_read(leaflet_an) %>% leaflet::addProviderTiles("CartoDB.Positron")
+
+```{r plt-exposure, fig.cap = "Mean exposure by province."}
+# path must be relative to the output html to show the plot
+# ignore the error while rendering (issue with root/working directory for pandoc vs output html)
+knitr::include_graphics(
+  file.path("..", grep("exposure", targets::tar_read(fig_map_inputs_facet), value = T)), 
+  error = F
+)
+```
+
+```{r plt-mortality, fig.cap = "Mortality counts by province."}
+knitr::include_graphics(
+  file.path("..", grep("exposure", targets::tar_read(fig_map_inputs_facet), value = T)), 
+  error = F
+)
 ```
 
 Exposure to PM~2.5~, counterfactual PM~2.5~ concentration, expected mortality and attributable number of deaths for the year 2020 is shown in Table \@ref(tab:tbl-sample-year).
 
-```{r tbl-sample-year, echo=FALSE}
+```{r tbl-sample-year}
 data_exposure_health <- targets::tar_read(data_combine_exposure_response)
 dat_an <- targets::tar_read(data_attributable_number)
 

@@ -43,6 +43,30 @@ You must register to search and download data from IHME's GBD Results Tool. To r
 
 ## Run the pipeline
 
+### Open the project
+
+Open up the R project (`ResPrj_Indonesia_HIA_pm25_mortality_1998_2020.Rproj`) in RStudio. You should be able to see the project name in the upper-right corner of the RStudio window. If you see "Project: (None)" instead, you have not opened the project file correctly and the targets code will not work.
+
+### Install the required packages
+
+RStudio should prompt you to install the libraries required if not already installed.
+
+If not automatically prompted, you can install libraries by running the command `install.packages("targets")` in the Console. Additional packages used by the pipeline are `tarchetypes`, `sf`, `terra`, `data.table`, `tmap` - these can be installed with: 
+
+`install.packages(c("targets", "tarchetypes", "sf", "terra", "data.table", "tmap"))`
+
+The [`iomlifetR` package](https://github.com/richardbroome2002/iomlifetR) is also required to calculate HIA life tables and other metrics but is not available through CRAN. It can be installed from GitHub by running the following:
+
+`devtools::install_github("richardbroome2002/iomlifetR", build_vignettes = TRUE)`
+
+("sf", 
+               "terra",
+               "data.table",
+               "iomlifetR",
+               "tmap")
+
+### Set the inputs
+
 The pipeline is defined in the `_targets.R` file, while global objects are defined in `config.R`. Helper code designed to run interactively (line-by-line) is provided in `main.R` and can be used to examine, run and visualise the pipeline and its outputs.
 
 You must define the paths to the input files in `config.R`. All variables 
@@ -54,3 +78,18 @@ You must define the paths to the input files in `config.R`. All variables
 must be provided and point to the corresponding input data files you have downloaded.
 
 The mapping of province names is included in this repository under the `metadata/` directory. Ensure the `infile.locname_map` variable is correctly defined for this mapping file.
+
+### Run targets
+
+Open the `main.R` file. This code should be run interactively, line-by-line. You can run code one line at a time in RStudio by clicking the button "Run" at the top-right of the code panel (known as the Source panel). Alternatively you may use the shortcut `Ctrl + Enter` on a Windows machine.
+
+Starting from the top, run the code and examine the output.
+
+1. `library(targets)`: Loads the `targets` package.
+2. `tar_manifest()` and `tar_visnetwork(targets_only = T)`: Check the targets of the pipeline have been defined correctly and dependencies are linked correctly.
+3. `tar_make()`: Run all invalidated targets. Progress shown in console.
+4. `tar_read(data_attributable_number)`: Read the output of the specified target (may be a data.frame, file path, etc.)
+5. `browseURL(tar_read(report)[1])`: Open up the rendered report in a browser.
+6. `tar_meta()`: View the target metadata, including warnings and errors, number of seconds to run, time target was last run, size of target.
+
+You can also open the output files from the pipeline which are located in the `data_derived/` (output data files), `figs_and_tabs/` (figures and tables output) and `report/` (rendered Rmarkdown documents) directories.

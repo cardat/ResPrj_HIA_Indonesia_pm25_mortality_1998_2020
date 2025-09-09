@@ -81,7 +81,13 @@
 <ul>
 <li class="chapter" data-level="3.3.1" data-path="getting-started.html"><a href="getting-started.html#using-the-gbd-results-tool"><i class="fa fa-check"></i><b>3.3.1</b> Using the GBD Results Tool</a></li>
 </ul></li>
-<li class="chapter" data-level="3.4" data-path="getting-started.html"><a href="getting-started.html#run-the-pipeline"><i class="fa fa-check"></i><b>3.4</b> Run the pipeline</a></li>
+<li class="chapter" data-level="3.4" data-path="getting-started.html"><a href="getting-started.html#run-the-pipeline"><i class="fa fa-check"></i><b>3.4</b> Run the pipeline</a>
+<ul>
+<li class="chapter" data-level="3.4.1" data-path="getting-started.html"><a href="getting-started.html#open-the-project"><i class="fa fa-check"></i><b>3.4.1</b> Open the project</a></li>
+<li class="chapter" data-level="3.4.2" data-path="getting-started.html"><a href="getting-started.html#install-the-required-packages"><i class="fa fa-check"></i><b>3.4.2</b> Install the required packages</a></li>
+<li class="chapter" data-level="3.4.3" data-path="getting-started.html"><a href="getting-started.html#set-the-inputs"><i class="fa fa-check"></i><b>3.4.3</b> Set the inputs</a></li>
+<li class="chapter" data-level="3.4.4" data-path="getting-started.html"><a href="getting-started.html#run-targets"><i class="fa fa-check"></i><b>3.4.4</b> Run targets</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="user-guide.html"><a href="user-guide.html"><i class="fa fa-check"></i><b>4</b> User Guide</a></li>
 </ul>
@@ -145,6 +151,25 @@
 </div>
 <div id="run-the-pipeline" class="section level2 hasAnchor" number="3.4">
 <h2><span class="header-section-number">3.4</span> Run the pipeline<a href="getting-started.html#run-the-pipeline" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="open-the-project" class="section level3 hasAnchor" number="3.4.1">
+<h3><span class="header-section-number">3.4.1</span> Open the project<a href="getting-started.html#open-the-project" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Open up the R project (<code>ResPrj_Indonesia_HIA_pm25_mortality_1998_2020.Rproj</code>) in RStudio. You should be able to see the project name in the upper-right corner of the RStudio window. If you see “Project: (None)” instead, you have not opened the project file correctly and the targets code will not work.</p>
+</div>
+<div id="install-the-required-packages" class="section level3 hasAnchor" number="3.4.2">
+<h3><span class="header-section-number">3.4.2</span> Install the required packages<a href="getting-started.html#install-the-required-packages" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>RStudio should prompt you to install the libraries required if not already installed.</p>
+<p>If not automatically prompted, you can install libraries by running the command <code>install.packages("targets")</code> in the Console. Additional packages used by the pipeline are <code>tarchetypes</code>, <code>sf</code>, <code>terra</code>, <code>data.table</code>, <code>tmap</code> - these can be installed with:</p>
+<p><code>install.packages(c("targets", "tarchetypes", "sf", "terra", "data.table", "tmap"))</code></p>
+<p>The <a href="https://github.com/richardbroome2002/iomlifetR"><code>iomlifetR</code> package</a> is also required to calculate HIA life tables and other metrics but is not available through CRAN. It can be installed from GitHub by running the following:</p>
+<p><code>devtools::install_github("richardbroome2002/iomlifetR", build_vignettes = TRUE)</code></p>
+<p>(“sf”,
+“terra”,
+“data.table”,
+“iomlifetR”,
+“tmap”)</p>
+</div>
+<div id="set-the-inputs" class="section level3 hasAnchor" number="3.4.3">
+<h3><span class="header-section-number">3.4.3</span> Set the inputs<a href="getting-started.html#set-the-inputs" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>The pipeline is defined in the <code>_targets.R</code> file, while global objects are defined in <code>config.R</code>. Helper code designed to run interactively (line-by-line) is provided in <code>main.R</code> and can be used to examine, run and visualise the pipeline and its outputs.</p>
 <p>You must define the paths to the input files in <code>config.R</code>. All variables</p>
 <ul>
@@ -154,7 +179,22 @@
 </ul>
 <p>must be provided and point to the corresponding input data files you have downloaded.</p>
 <p>The mapping of province names is included in this repository under the <code>metadata/</code> directory. Ensure the <code>infile.locname_map</code> variable is correctly defined for this mapping file.</p>
+</div>
+<div id="run-targets" class="section level3 hasAnchor" number="3.4.4">
+<h3><span class="header-section-number">3.4.4</span> Run targets<a href="getting-started.html#run-targets" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Open the <code>main.R</code> file. This code should be run interactively, line-by-line. You can run code one line at a time in RStudio by clicking the button “Run” at the top-right of the code panel (known as the Source panel). Alternatively you may use the shortcut <code>Ctrl + Enter</code> on a Windows machine.</p>
+<p>Starting from the top, run the code and examine the output.</p>
+<ol style="list-style-type: decimal">
+<li><code>library(targets)</code>: Loads the <code>targets</code> package.</li>
+<li><code>tar_manifest()</code> and <code>tar_visnetwork(targets_only = T)</code>: Check the targets of the pipeline have been defined correctly and dependencies are linked correctly.</li>
+<li><code>tar_make()</code>: Run all invalidated targets. Progress shown in console.</li>
+<li><code>tar_read(data_attributable_number)</code>: Read the output of the specified target (may be a data.frame, file path, etc.)</li>
+<li><code>browseURL(tar_read(report)[1])</code>: Open up the rendered report in a browser.</li>
+<li><code>tar_meta()</code>: View the target metadata, including warnings and errors, number of seconds to run, time target was last run, size of target.</li>
+</ol>
+<p>You can also open the output files from the pipeline which are located in the <code>data_derived/</code> (output data files), <code>figs_and_tabs/</code> (figures and tables output) and <code>report/</code> (rendered Rmarkdown documents) directories.</p>
 
+</div>
 </div>
 </div>
             </section>

@@ -6,4 +6,8 @@ download-the-repository-code
 download-the-input-data
 using-the-gbd-results-tool
 run-the-pipeline
+open-the-project
+install-the-required-packages
+set-the-inputs
+run-targets
 user-guide

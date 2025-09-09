@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>3 Getting started | ResPrj_Indonesia_HIA_pm25_mortality_1998_2020</title>
+  <meta name="description" content="3 Getting started | ResPrj_Indonesia_HIA_pm25_mortality_1998_2020" />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="3 Getting started | ResPrj_Indonesia_HIA_pm25_mortality_1998_2020" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="3 Getting started | ResPrj_Indonesia_HIA_pm25_mortality_1998_2020" />
+  
+  
+  
+
+
+
+<meta name="date" content="2025-09-09" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="methodology.html"/>
+<link rel="next" href="user-guide.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Overview</a></li>
+<li class="chapter" data-level="2" data-path="methodology.html"><a href="methodology.html"><i class="fa fa-check"></i><b>2</b> Methodology</a></li>
+<li class="chapter" data-level="3" data-path="getting-started.html"><a href="getting-started.html"><i class="fa fa-check"></i><b>3</b> Getting started</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="getting-started.html"><a href="getting-started.html#software"><i class="fa fa-check"></i><b>3.1</b> Software</a></li>
+<li class="chapter" data-level="3.2" data-path="getting-started.html"><a href="getting-started.html#download-the-repository-code"><i class="fa fa-check"></i><b>3.2</b> Download the repository code</a></li>
+<li class="chapter" data-level="3.3" data-path="getting-started.html"><a href="getting-started.html#download-the-input-data"><i class="fa fa-check"></i><b>3.3</b> Download the input data</a></li>
+<li class="chapter" data-level="3.4" data-path="getting-started.html"><a href="getting-started.html#run-the-pipeline"><i class="fa fa-check"></i><b>3.4</b> Run the pipeline</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="user-guide.html"><a href="user-guide.html"><i class="fa fa-check"></i><b>4</b> User Guide</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">ResPrj_Indonesia_HIA_pm25_mortality_1998_2020</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="getting-started" class="section level1 hasAnchor" number="3">
+<h1><span class="header-section-number">3</span> Getting started<a href="getting-started.html#getting-started" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="software" class="section level2 hasAnchor" number="3.1">
+<h2><span class="header-section-number">3.1</span> Software<a href="getting-started.html#software" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>This pipeline was developed on R version 4.5.1 “Great Square Root” and RStudio version 2025.05.1 “Mariposa Orchid”. You will need to have <a href="https://www.r-project.org/">R</a> installed and it is strongly recommended to also <a href="https://posit.co/download/rstudio-desktop/">install RStudio</a>.</p>
+</div>
+<div id="download-the-repository-code" class="section level2 hasAnchor" number="3.2">
+<h2><span class="header-section-number">3.2</span> Download the repository code<a href="getting-started.html#download-the-repository-code" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Go to the GitHub repository for <a href="https://github.com/cardat/ResPrj_HIA_Indonesia_pm25_mortality_1998_2020">ResPrj_HIA_Indonesia_pm25_mortality_1998_2020</a>. Download the repository by clicking the green <code>&lt; &gt; Code</code> button, then “Download ZIP”. Extract the downloaded zip file to an appropriate location on your computer.</p>
+<p>Alternatively, if you are comfortable with using Git, you may clone the repository.</p>
+</div>
+<div id="download-the-input-data" class="section level2 hasAnchor" number="3.3">
+<h2><span class="header-section-number">3.3</span> Download the input data<a href="getting-started.html#download-the-input-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>All datasets are publicly available from the following sources:</p>
+<ul>
+<li>Modelled mortality data: <a href="https://www.healthdata.org/">Institute of Health Metrics and Evaluation (IHME)</a> via the <a href="https://vizhub.healthdata.org/gbd-results/">GBD Results Tool</a></li>
+<li>Modelled PM<sub>2.5</sub> exposure data: <a href="https://sites.wustl.edu/acag/">Atmospheric Composition Analysis Group (ACAG)</a> as part of the <a href="https://sites.wustl.edu/acag/datasets/surface-pm2-5/">SatPM2.5 (Satellite-derived PM2.5) dataset</a> (older versions archived)</li>
+<li>Geographical boundaries: <a href="https://gadm.org/index.html">Database of Global Administrative Area</a></li>
+</ul>
+<p>Please <strong>note the licencing and conditions of use</strong> for each dataset before using them in your work.</p>
+<p>The specific dataset versions used in the development of the pipeline are available in the Cloud CARDAT repository to approved researchers.</p>
+<ul>
+<li><a href="https://cardat.github.io/data_inventory/ihme_gbd_2021.html#ihme_gbd_2021_all_cause_mortality_sea_1998_2021">IHME data for Southeast Asia</a>, as of 2025-06-03</li>
+<li>ACAG <a href="https://cardat.github.io/data_inventory/air_pollution_model_globalgwr_pm25.html#globalgwr_pm25_v5gl02_1998_2020">SatPM2.5 Global V5.GL.02</a></li>
+<li>GADM v4.0.4</li>
+</ul>
+</div>
+<div id="run-the-pipeline" class="section level2 hasAnchor" number="3.4">
+<h2><span class="header-section-number">3.4</span> Run the pipeline<a href="getting-started.html#run-the-pipeline" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The pipeline is defined in the <code>_targets.R</code> file, while global objects are defined in <code>config.R</code>. Helper code designed to run interactively (line-by-line) is provided in <code>main.R</code> and can be used to examine, run and visualise the pipeline and its outputs.</p>
+<p>You must define the paths to the input files in <code>config.R</code>. All variables <code>indir.geography</code> and <code>infile.geography</code> (GADM data), <code>indir.mort</code> and <code>infile.mort</code> (IHME data), and <code>indir.pm25</code> and <code>infile.pm25</code> (ACAG data) must be provided and point to the corresponding input data files you have downloaded.</p>
+<p>The mapping of province names is included in this repository under the <code>metadata/</code> directory. Ensure the <code>infile.locname_map</code> variable is correctly defined for this mapping file.</p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="methodology.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="user-guide.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": null,
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
+});
+});
+</script>
+
+</body>
+
+</html>

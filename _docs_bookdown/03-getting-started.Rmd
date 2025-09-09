@@ -1,0 +1,36 @@
+# Getting started {#getting-started}
+
+## Software
+
+This pipeline was developed on R version 4.5.1 "Great Square Root" and RStudio version 2025.05.1 "Mariposa Orchid". You will need to have [R](https://www.r-project.org/) installed and it is strongly recommended to also [install RStudio](https://posit.co/download/rstudio-desktop/).
+
+## Download the repository code
+
+Go to the GitHub repository for [ResPrj_HIA_Indonesia_pm25_mortality_1998_2020](https://github.com/cardat/ResPrj_HIA_Indonesia_pm25_mortality_1998_2020). Download the repository by clicking the green `< > Code` button, then "Download ZIP". Extract the downloaded zip file to an appropriate location on your computer.
+
+Alternatively, if you are comfortable with using Git, you may clone the repository.
+
+## Download the input data
+
+All datasets are publicly available from the following sources:
+
+- Modelled mortality data: [Institute of Health Metrics and Evaluation (IHME)](https://www.healthdata.org/) via the [GBD Results Tool](https://vizhub.healthdata.org/gbd-results/)
+- Modelled PM~2.5~ exposure data: [Atmospheric Composition Analysis Group (ACAG)](https://sites.wustl.edu/acag/) as part of the [SatPM2.5 (Satellite-derived PM2.5) dataset](https://sites.wustl.edu/acag/datasets/surface-pm2-5/) (older versions archived)
+- Geographical boundaries: [Database of Global Administrative Area](https://gadm.org/index.html)
+
+Please **note the licencing and conditions of use** for each dataset before using them in your work.
+
+
+The specific dataset versions used in the development of the pipeline are available in the Cloud CARDAT repository to approved researchers.
+
+- [IHME data for Southeast Asia](https://cardat.github.io/data_inventory/ihme_gbd_2021.html#ihme_gbd_2021_all_cause_mortality_sea_1998_2021), as of 2025-06-03
+- ACAG [SatPM2.5 Global V5.GL.02](https://cardat.github.io/data_inventory/air_pollution_model_globalgwr_pm25.html#globalgwr_pm25_v5gl02_1998_2020)
+- GADM v4.0.4
+
+## Run the pipeline
+
+The pipeline is defined in the `_targets.R` file, while global objects are defined in `config.R`. Helper code designed to run interactively (line-by-line) is provided in `main.R` and can be used to examine, run and visualise the pipeline and its outputs.
+
+You must define the paths to the input files in `config.R`. All variables `indir.geography` and `infile.geography` (GADM data), `indir.mort` and `infile.mort` (IHME data), and `indir.pm25` and `infile.pm25` (ACAG data) must be provided and point to the corresponding input data files you have downloaded.
+
+The mapping of province names is included in this repository under the `metadata/` directory. Ensure the `infile.locname_map` variable is correctly defined for this mapping file.

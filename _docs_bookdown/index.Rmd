@@ -1,0 +1,24 @@
+---
+title: "ResPrj_Indonesia_HIA_pm25_mortality_1998_2020"
+date: "`r Sys.Date()`"
+output: 
+  bookdown::gitbook
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# Overview
+
+This code repository demonstrates a simple Health Impact Assessment (HIA) for provinces of Indonesia using publicly available data as input. It is built using the [R `targets` package](https://books.ropensci.org/targets/) which is a Make-like pipeline tool. 
+
+The targets framework allow users to develop and edit the pipeline at all stage while ensuring reproducibility and efficiency. Each target is designed to complete one step of the HIA (whether that be defining the input, cleaning the data, analysing the data or creating an output or visualisation). Targets are linked by the dependence, for example, an analysis step (target) may depend on cleaned environmental and cleaned health data, as well as a custom function to perform the analysis.
+
+Changes made to any target (or global object or function) will invalidate downstream targets. On the subsequent run of the pipeline, the changed target and all downstream targets will be run again, ensuring the effects of the changed target are propagated to the rest of the pipeline. At the same time, if a target is not affected by the changed target, it will not be rerun.
+
+Further reading:
+
+- A [brief description of the HIA methodology](#methodology) used
+- A [quick start guide](#getting-started) to downloading and running this pipeline
+- An [outline of the structure of the pipeline and how to make changes](#user-guide)

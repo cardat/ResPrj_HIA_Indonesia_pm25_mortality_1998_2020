@@ -231,7 +231,9 @@ list(
   # REPORTS --------------------------------------------------------------
   ## report_targets ####
   # render a summary of pipeline status
-  tar_render(report_targets, "pipeline_status/report_pipeline_status.Rmd"),
+  # always run this target (has no dependency on another target)
+  tar_render(report_targets, "report/report_pipeline_status.Rmd",
+             cue = tar_cue("always")),
   
   ## report ####
   # render an Rmarkdown report of the HIA

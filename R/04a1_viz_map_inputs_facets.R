@@ -36,8 +36,8 @@ viz_map_inputs_facet <- function(data_combine_exposure_response = data_combine_e
   
   tm_mort <- tm_shape(v_mort) +
     tm_polygons(fill = "mort", 
-                fill.legend = tm_legend(title = "Mortality (per 100,000)"),
-                fill.scale = tm_scale(values = "-brewer.rd_bu")) +
+                fill.legend = tm_legend(title = "Mortality count"),
+                fill.scale = tm_scale(values = "brewer.reds")) +
     tm_facets(by = "year", nrow = nrow_facet) + 
     tm_layout(asp = asp_facet) +
     tm_scalebar()

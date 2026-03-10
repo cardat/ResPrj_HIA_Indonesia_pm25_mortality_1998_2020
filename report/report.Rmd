@@ -14,6 +14,8 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE)
 
 ## Health Impact Assessment
 
+### Inputs
+
 In Indonesia, the mean exposure to PM~2.5~ (for a subset of study years) is shown in Figure \@ref(fig:plt-exposure) by province. Mortality counts are displayed in Figure \@ref(fig:plt-mortality).
 
 
@@ -26,11 +28,29 @@ knitr::include_graphics(
 )
 ```
 
-```{r plt-mortality, fig.cap = "Mortality counts by province."}
+```{r plt-population, fig.cap = "Population by province."}
 knitr::include_graphics(
-  file.path("..", grep("exposure", targets::tar_read(fig_map_inputs_facet), value = T)), 
+  file.path("..", grep("population", targets::tar_read(fig_map_inputs_facet), value = T)), 
   error = F
 )
+```
+
+```{r plt-mortality, fig.cap = "Mortality counts by province."}
+knitr::include_graphics(
+  file.path("..", grep("mortality", targets::tar_read(fig_map_inputs_facet), value = T)), 
+  error = F
+)
+```
+
+
+### Attributable number
+
+```{r plt-attributable-number, fig.cap = "Attributable deaths by province."}
+knitr::include_graphics(
+  file.path("..", targets::tar_read(fig_map_attributable_number)), error = F)
+#   file.path("..", grep("attributable_[0-9]", targets::tar_read(fig_map_inputs_facet), value = T)), 
+#   error = F
+# )
 ```
 
 Exposure to PM~2.5~, counterfactual PM~2.5~ concentration, expected mortality and attributable number of deaths for the year 2020 is shown in Table \@ref(tab:tbl-sample-year).

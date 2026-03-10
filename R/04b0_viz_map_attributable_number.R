@@ -15,14 +15,14 @@ viz_map_attributable_number <- function(data_combine_exposure_response = data_co
   dat_an[, attributable := data_attributable_number]
   
   # aggregate
-  dat_an <- dat_an[, .(attributable = sum(attributable)), by = .(country_name, province, measure, age, cause, year)]
+  dat_an <- dat_an[, .(attributable = sum(attributable)), by = .(country_name, province, measure, cause, year)]
   v_an <- merge(v, dat_an[year %in% yy])
   
   # plot
   tm_an <- tm_shape(v_an) +
     tm_polygons(fill = "attributable",
-                fill.legend = tm_legend(title = "Attributable number"),
-                fill.scale = tm_scale(values = "brewer.reds")) +
+                fill.legend = tm_legend(title = "Attributable number (all ages)"),
+                fill.scale = tm_scale(values = "brewer.yl_or_br")) +
     tm_facets(by = "year", nrow = nrow_facet) + 
     tm_layout(asp = asp_facet) +
     tm_scalebar()

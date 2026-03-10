@@ -19,7 +19,7 @@ do_tidy_mortality <- function(file_mortality){
   dat2[, age := factor(age, levels = sel_agegroups)]
 
   # estimate population ####
-  dat3 <- data.table::dcast(dat2, ... ~ metric, value.var = c("val"))
+  dat3 <- data.table::dcast(dat2, as.formula("... ~ metric"), value.var = c("val"))
   
   ## standardise the headings
   setnames(dat3,

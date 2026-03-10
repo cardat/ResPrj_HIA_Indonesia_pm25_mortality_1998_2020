@@ -34,8 +34,8 @@ viz_map_inputs <- function(data_combine_exposure_response = data_combine_exposur
   
   tm_mort_single <- tm_shape(v_mort[v_mort$year == yy, ]) +
     tm_polygons(fill = "mort", 
-                fill.legend = tm_legend(title = "Mortality (per 100,000)"),
-                fill.scale = tm_scale(values = "-brewer.rd_bu")) +
+                fill.legend = tm_legend(title = "Mortality count"),
+                fill.scale = tm_scale(values = "brewer.reds")) +
     tm_graticules(col = "grey80") +
     tm_scalebar()
   

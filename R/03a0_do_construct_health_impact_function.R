@@ -1,6 +1,6 @@
 # targets::tar_workspace(health_impact_function)
 
-do_health_impact_function <- function(
+do_construct_health_impact_function <- function(
   exposure_response_func = c(1.062, 1.040, 1.083), # from HRAPIE project, with lower and upper bounds
   theoretical_minimum_risk = 0,
   unit_change = 10

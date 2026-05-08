@@ -27,7 +27,8 @@ tar_option_set(
                "terra",
                "data.table",
                "iomlifetR",
-               "tmap"),
+               "tmap",
+               "ncdf4"),
   workspace_on_error = TRUE,
   workspaces = "data_attributable_number",
   error = "continue"
@@ -40,41 +41,48 @@ list(
   # Mortality
   tar_target(file_mortality,
              file.path(indir.mort, infile.mort),
-             format = "file"),
+             format = "file")
+  ,
   # Exposure rasters
   tar_target(file_exposure,
              file.path(indir.pm25, infile.pm25),
-             format = "file"),
+             format = "file")
+  ,
   # Geographical bounds
   tar_target(file_geography,
              file.path(indir.geography, infile.geography),
-             format = "file"),
-  
+             format = "file")
+  ,
+
   # mapping file for province names
   tar_target(file_mapping,
              infile.locname_map,
-             format = "file"),
-  
-  
+             format = "file")
+  ,
+
+
   # DATA CLEANING/TRANSFORMATION -------------------------------------------
-  
-  
+
+
   ## Clean/tidy initial data inputs ####
-  
-  ### file_tidy_geography ####
+
+  # file_tidy_geography ####
   tar_target(file_tidy_geography,
-             do_tidy_geography(file_geography = file_geography, 
+             do_tidy_geography(file_geography = file_geography,
                                 outfile = out.geography),
-             format = "file"),
-  
+             format = "file")
+  ,
+
   ### data_tidy_mortality ####
   tar_target(data_tidy_mortality,
-             do_tidy_mortality(file_mortality = file_mortality)),
-  
+             do_tidy_mortality(file_mortality = file_mortality))
+  ,
+
   ### data_tidy_mortality_pop ####
   tar_target(data_tidy_mortality_pop,
-             do_tidy_mortality_pop(data_tidy_mortality = data_tidy_mortality)),
-  
+             do_tidy_mortality_pop(data_tidy_mortality = data_tidy_mortality))
+  ,
+
   ### data_calc_exposure_by_geography ####
   tar_target(
     data_calc_exposure_by_geography,
@@ -83,11 +91,12 @@ list(
       file_tidy_geography = file_tidy_geography,
       variable_name = "pm25"
     )
-  ), 
-  
-  
+  )
+  ,
+
+
   ## Counterfactual scenario ####
-  
+
   ### data_construct_counterfactual ####
   ## Set scenario, calculate delta
   tar_target(
@@ -95,11 +104,12 @@ list(
     do_construct_counterfactual(data_calc_exposure_by_geography = data_calc_exposure_by_geography,
                                 counterfactual_type = counterfactual_scenario_type,
                                 counterfactual_value = counterfactual_scenario)
-  ),
-  
-  
+  )
+  ,
+
+
   ## Combine dataset inputs ####
-  
+
   ### data_combine_exposure_response ####
   ## merge exposure and health data
   tar_target(
@@ -107,30 +117,33 @@ list(
     do_combine_exposure_response(
       data_tidy_mortality = data_tidy_mortality,
       data_tidy_mortality_pop = data_tidy_mortality_pop,
-      # data_calc_exposure_by_geography = data_calc_exposure_by_geography, 
+      # data_calc_exposure_by_geography = data_calc_exposure_by_geography,
       data_construct_counterfactual = data_construct_counterfactual,
       file_mapping = file_mapping
     )
-  ), 
+  )
+  ,
   tar_target(
     file_combine_exposure_response,
     fwrite(data_combine_exposure_response, out.combined_data),
     format = "file"
-  ),
+  )
+  ,
 
-    
+
   # ANALYSIS ---------------------------------------------------------------
-  
-  ### construct response function #### 
+
+  ### construct response function ####
   ## given relative risks and theoretical minimum risk
   #### health_impact_function ####
   tar_target(health_impact_function,
-             do_health_impact_function(
+             do_construct_health_impact_function(
                exposure_response_func = rr,
                theoretical_minimum_risk = theoretical_minimum_risk,
                unit_change = units_rr_per)
-  ),
-  
+  )
+  ,
+
   ## calculate health impacts ####
   ### data_attributable_number_alt ####
   # manual calculation of attributable number
@@ -140,32 +153,37 @@ list(
                data_combine_exposure_response = data_combine_exposure_response,
                minimum_age = 30
              )
-  ),
-  
+  )
+  ,
+
   ### data_attributable_number ####
   # attributable number from iomlifetR
   tar_target(data_attributable_number,
              do_attributable_number(
                data_combine_exposure_response = data_combine_exposure_response
              )
-  ),
-  
-  
+  )
+  ,
+
+
   ### data_life_tables ####
   # life tables from iomlifetR
   tar_target(data_life_table,
              do_life_table(
                data_combine_exposure_response = data_combine_exposure_response
              )
-  ),
+  )
+  ,
   ### data_le ####
   # life expectancy from iomlifetR
   tar_target(data_le,
              do_le(
-               data_combine_exposure_response = data_combine_exposure_response
+               data_combine_exposure_response = data_combine_exposure_response,
+               outfile = outfile
              )
-  ),
-  
+  )
+  ,
+
   ### data_yll ####
   # years of life lost from iomlifetR
   tar_target(data_yll,
@@ -173,14 +191,16 @@ list(
                data_attributable_number = data_attributable_number,
                data_le = data_le
              )
-  ),
-  
+  )
+  ,
+
   # VISUALISE ------------------------------------------------------------
- 
+
   ### Plot these years in faceted data maps
   tar_target(qc_yy,
-             2015:2020),
-  
+             2015:2020)
+  ,
+
   ## fig_map_inputs ####
   # Population, mortality, exposure
   tar_target(fig_map_inputs,
@@ -190,7 +210,8 @@ list(
                yy = 2020,
                outdir = outdirs$figs_tabs
              ),
-             format = "file",),
+             format = "file",)
+  ,
   ## fig_map_inputs_facet ####
   # Population, mortality, exposure
   tar_target(fig_map_inputs_facet,
@@ -200,10 +221,11 @@ list(
                yy = qc_yy,
                outdir = outdirs$figs_tabs
              ),
-             format = "file"),
-  
+             format = "file")
+  ,
+
   ## fig_map_attributable_number_alt ####
-  ### from manual calcalation of attributable number
+  ### from manual calculation of attributable number
   tar_target(fig_map_attributable_number_alt,
              viz_map_attributable_number_alt(
                data_attributable_number_alt = data_attributable_number_alt,
@@ -212,35 +234,37 @@ list(
                outdir = outdirs$figs_tabs
              ),
              format = "file"
-  ),
-  
+  )
+  ,
+
   ## fig_map_attributable_number ####
   ### from iomlifetR function for attributable number
   tar_target(fig_map_attributable_number,
              viz_map_attributable_number(
-               data_combine_exposure_response = data_combine_exposure_response, 
+               data_combine_exposure_response = data_combine_exposure_response,
                data_attributable_number = data_attributable_number,
                file_tidy_geography = file_tidy_geography,
                yy = qc_yy,
                outdir = outdirs$figs_tabs
              ),
              format = "file"
-  ),
-  
+  )
+  ,
+
 
   # REPORTS --------------------------------------------------------------
-  
+
   ## report ####
   # render an Rmarkdown report of the HIA
   tar_render(report, "report/report.Rmd"),
-  
-  
+
+
   ## report_targets ####
   # render a summary of pipeline status
   # always run this target (has no dependency on another target)
   tar_render(report_targets, "report/report_pipeline_status.Rmd",
              cue = tar_cue("always"))
-  
+
 )
 
  

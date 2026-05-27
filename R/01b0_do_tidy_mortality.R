@@ -7,9 +7,10 @@
 #' @returns data.table of mortality data with fields measure, province, sex, age, cause, year, number (count) and rate
 do_tidy_mortality <- function(file_mortality){
   
-  dat <- fread(file_mortality)
-  
   # Subset data ####
+  # subset to Indonesian provinces only (location_id 4-digits, starting with '47')
+  dat <- fread(file_mortality)[grepl("^47", location_id)]
+  
   # clean up headings
   dat2 <- dat[, .(measure_name, location_name, sex_name, age_name, cause_name, metric_name, year, val)]
   setnames(dat2, names(dat2), gsub("_name$", "", names(dat2)))

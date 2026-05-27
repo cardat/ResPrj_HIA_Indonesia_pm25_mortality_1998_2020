@@ -107,7 +107,7 @@ list(
     do_combine_exposure_response(
       data_tidy_mortality = data_tidy_mortality,
       data_tidy_mortality_pop = data_tidy_mortality_pop,
-      # data_calc_exposure_by_geography = data_calc_exposure_by_geography, 
+      data_calc_exposure_by_geography = data_calc_exposure_by_geography,
       data_construct_counterfactual = data_construct_counterfactual,
       file_mapping = file_mapping
     )

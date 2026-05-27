@@ -22,7 +22,7 @@ do_mortality_burden <- function(
     # demographic data must be contain fields 'age' (with beginning age of age group), 'population' and 'deaths'.
     demog_x <- x[, .(age = age,
                      population = pop,
-                     deaths = count,
+                     deaths = number,
                      delta = delta)]
     demog_x[, age := as.character(age)]
     demog_x[age == "<5 years", age := "0-5 years"]
@@ -60,7 +60,7 @@ do_mortality_burden <- function(
     dat_yll <- iomlifetR::burden_yll(attributable_number = dat_an,
                                      life_expectancy = dat_le$impacted[, "ex"])
     
-    ## Combine neatly for output
+    ## Combine neatly for output ####
     base_output <- x[, .(country_code, country_name, province, measure, sex, age, cause, year)]
     dat_burden_x <- cbind(base_output, data.table( 
                           attributable_deaths = dat_an,

@@ -81,8 +81,7 @@ list(
     data_calc_exposure_by_geography,
     do_calc_exposure_by_geography(
       file_exposure = file_exposure,
-      file_tidy_geography = file_tidy_geography,
-      variable_name = "pm25"
+      file_tidy_geography = file_tidy_geography
     )
   ), 
   
@@ -147,14 +146,14 @@ list(
              do_life_table(
                data_combine_exposure_response = data_combine_exposure_response
              )
-  ),
+             ),
   ### data_le ####
   # life expectancy from iomlifetR
   tar_target(data_le,
              do_le(
                data_combine_exposure_response = data_combine_exposure_response
              )
-  ),
+             ),
   
   ### data_yll ####
   # years of life lost from iomlifetR

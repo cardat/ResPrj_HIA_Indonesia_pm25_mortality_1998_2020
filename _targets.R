@@ -124,45 +124,53 @@ list(
   ### construct response function #### 
   ## given relative risks and theoretical minimum risk
   #### health_impact_function ####
-  tar_target(health_impact_function,
-             do_health_impact_function(
-               exposure_response_func = rr,
-               theoretical_minimum_risk = theoretical_minimum_risk,
-               unit_change = units_rr_per)
-  ),
+  # tar_target(health_impact_function,
+  #            do_health_impact_function(
+  #              exposure_response_func = rr,
+  #              theoretical_minimum_risk = theoretical_minimum_risk,
+  #              unit_change = units_rr_per)
+  # ),
   
-  ### data_attributable_number ####
-  # attributable number from iomlifetR
-  tar_target(data_attributable_number,
-             do_attributable_number(
+  ### iomlifetR calculations ####
+  
+  # Calculations of burdens via life expectancy, attributable number and years of life lost with functions from iomlifetR package
+  tar_target(data_mortality_burden,
+             do_mortality_burden(
                data_combine_exposure_response = data_combine_exposure_response
-             )
-  ),
-  
-  
-  ### data_life_tables ####
-  # life tables from iomlifetR
-  tar_target(data_life_table,
-             do_life_table(
-               data_combine_exposure_response = data_combine_exposure_response
-             )
              ),
-  ### data_le ####
-  # life expectancy from iomlifetR
-  tar_target(data_le,
-             do_le(
-               data_combine_exposure_response = data_combine_exposure_response
-             )
              ),
   
-  ### data_yll ####
-  # years of life lost from iomlifetR
-  tar_target(data_yll,
-             do_yll(
-               data_attributable_number = data_attributable_number,
-               data_le = data_le
-             )
-  ),
+  # # attributable number from iomlifetR
+  # tar_target(data_attributable_number,
+  #            do_attributable_number(
+  #              data_combine_exposure_response = data_combine_exposure_response
+  #            )
+  # ),
+  # 
+  # 
+  # ### data_life_tables ####
+  # # life tables from iomlifetR
+  # tar_target(data_life_table,
+  #            do_life_table(
+  #              data_combine_exposure_response = data_combine_exposure_response
+  #            )
+  # ),
+  # ### data_le ####
+  # # life expectancy from iomlifetR
+  # tar_target(data_le,
+  #            do_le(
+  #              data_combine_exposure_response = data_combine_exposure_response
+  #            )
+  # ),
+  # 
+  # ### data_yll ####
+  # # years of life lost from iomlifetR
+  # tar_target(data_yll,
+  #            do_yll(
+  #              data_attributable_number = data_attributable_number,
+  #              data_le = data_le
+  #            )
+  # ),
   
   # VISUALISE ------------------------------------------------------------
  

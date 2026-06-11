@@ -27,10 +27,11 @@ tar_option_set(
                "terra",
                "data.table",
                "iomlifetR",
+               "ncdf4",
                "tmap",
-               "ncdf4"),
+               "ggplot2"),
   workspace_on_error = TRUE,
-  workspaces = "data_attributable_number",
+  workspaces = "data_calc_popw_exposure_by_geography",
   error = "continue"
 )
 
@@ -38,9 +39,13 @@ tar_option_set(
 list(
   # DATA INPUTS -------------------------------------------------------------
   
-  # Mortality
+  # Mortality (+ derived population)
   tar_target(file_mortality,
              file.path(indir.mort, infile.mort),
+             format = "file"),
+  # Population rasters
+  tar_target(file_population,
+             file.path(indir.pop, infile.pop),
              format = "file"),
   # Exposure rasters
   tar_target(file_exposure,
@@ -76,15 +81,16 @@ list(
   tar_target(data_tidy_mortality_pop,
              do_tidy_mortality_pop(data_tidy_mortality = data_tidy_mortality)),
   
+  ## Base Exposure ####
   ### data_calc_exposure_by_geography ####
   tar_target(
     data_calc_exposure_by_geography,
     do_calc_exposure_by_geography(
       file_exposure = file_exposure,
-      file_tidy_geography = file_tidy_geography
+      file_tidy_geography = file_tidy_geography,
+      file_population = file_population
     )
   ), 
-  
   
   ## Counterfactual scenario ####
   
@@ -92,9 +98,20 @@ list(
   ## Set scenario, calculate delta
   tar_target(
     data_construct_counterfactual,
-    do_construct_counterfactual(data_calc_exposure_by_geography = data_calc_exposure_by_geography,
-                                counterfactual_type = counterfactual_scenario_type,
-                                counterfactual_value = counterfactual_scenario)
+    do_construct_counterfactual(
+      data_calc_exposure_by_geography = data_calc_exposure_by_geography[exposure_aggregation == "mean"],
+      counterfactual_type = counterfactual_scenario_type,
+      counterfactual_value = counterfactual_scenario)
+  ),
+  
+  ### data_construct_popw_counterfactual ####
+  ## Set scenario, calculate delta
+  tar_target(
+    data_construct_popw_counterfactual,
+    do_construct_counterfactual(
+      data_calc_exposure_by_geography = data_calc_exposure_by_geography[exposure_aggregation == "population-weighted mean"],
+      counterfactual_type = counterfactual_scenario_type,
+      counterfactual_value = counterfactual_scenario)
   ),
   
   
@@ -107,7 +124,7 @@ list(
     do_combine_exposure_response(
       data_tidy_mortality = data_tidy_mortality,
       data_tidy_mortality_pop = data_tidy_mortality_pop,
-      data_calc_exposure_by_geography = data_calc_exposure_by_geography,
+      data_calc_exposure_by_geography = data_calc_exposure_by_geography[exposure_aggregation == "mean"],
       data_construct_counterfactual = data_construct_counterfactual,
       file_mapping = file_mapping
     )
@@ -115,6 +132,24 @@ list(
   tar_target(
     file_combine_exposure_response,
     fwrite(data_combine_exposure_response, out.combined_data),
+    format = "file"
+  ),
+  
+  ### data_combine_popw_exposure_response ####
+  ## merge exposure and health data
+  tar_target(
+    data_combine_popw_exposure_response,
+    do_combine_exposure_response(
+      data_tidy_mortality = data_tidy_mortality,
+      data_tidy_mortality_pop = data_tidy_mortality_pop,
+      data_calc_exposure_by_geography = data_calc_exposure_by_geography[exposure_aggregation == "population-weighted mean"],
+      data_construct_counterfactual = data_construct_popw_counterfactual,
+      file_mapping = file_mapping
+    )
+  ), 
+  tar_target(
+    file_combine_popw_exposure_response,
+    fwrite(data_combine_popw_exposure_response, gsub("combined", "popw_combined", out.combined_data)),
     format = "file"
   ),
 
@@ -140,37 +175,12 @@ list(
              ),
              ),
   
-  # # attributable number from iomlifetR
-  # tar_target(data_attributable_number,
-  #            do_attributable_number(
-  #              data_combine_exposure_response = data_combine_exposure_response
-  #            )
-  # ),
-  # 
-  # 
-  # ### data_life_tables ####
-  # # life tables from iomlifetR
-  # tar_target(data_life_table,
-  #            do_life_table(
-  #              data_combine_exposure_response = data_combine_exposure_response
-  #            )
-  # ),
-  # ### data_le ####
-  # # life expectancy from iomlifetR
-  # tar_target(data_le,
-  #            do_le(
-  #              data_combine_exposure_response = data_combine_exposure_response
-  #            )
-  # ),
-  # 
-  # ### data_yll ####
-  # # years of life lost from iomlifetR
-  # tar_target(data_yll,
-  #            do_yll(
-  #              data_attributable_number = data_attributable_number,
-  #              data_le = data_le
-  #            )
-  # ),
+  # Calculations of burdens via life expectancy, attributable number and years of life lost with functions from iomlifetR package
+  tar_target(data_popw_mortality_burden,
+             do_mortality_burden(
+               data_combine_exposure_response = data_combine_popw_exposure_response
+             ),
+  ),
   
   # VISUALISE ------------------------------------------------------------
  
@@ -229,14 +239,22 @@ list(
   
   ## report ####
   # render an Rmarkdown report of the HIA
-  # tar_render(report, "report/report.Rmd"),
+  tar_quarto(report_summary, 
+             "report/report_summary.qmd", 
+             quiet = F
+             ),
+  tar_quarto(report_qc, 
+             "report/report_qc.qmd", 
+             quiet = F
+  )
+  
   
   
   ## report_targets ####
   # render a summary of pipeline status
   # always run this target (has no dependency on another target)
-  tar_render(report_targets, "report/report_pipeline_status.Rmd",
-             cue = tar_cue("always"))
+  # tar_render(report_targets, "report/report_pipeline_status.Rmd",
+  #            cue = tar_cue("always"))
   
 )
 

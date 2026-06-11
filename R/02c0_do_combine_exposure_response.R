@@ -39,12 +39,12 @@ do_combine_exposure_response <- function(
   # GADM - country_name, province
   
   # merge on mortality and population
-  dt_combined_mort_pop <- data_tidy_mortality[data_tidy_mortality_pop, on = .NATURAL]
+  dt_combined_mort_pop <- data_tidy_mortality[data_tidy_mortality_pop, on = .NATURAL, nomatch = NULL]
   
   # Combine Counterfactual (also containing baseline exposure) with mapping
   dt_exposure_response <- data_construct_counterfactual[dt_map, on = .(country_name, province), location := i.location]
   # attach on mortality/pop data
-  dt_exposure_response <- dt_exposure_response[dt_combined_mort_pop, on = .(location = province, year)]
+  dt_exposure_response <- dt_exposure_response[dt_combined_mort_pop, on = .(location = province, year), nomatch = NULL]
   
   # drop IHME location name
   dt_exposure_response[, location := NULL]

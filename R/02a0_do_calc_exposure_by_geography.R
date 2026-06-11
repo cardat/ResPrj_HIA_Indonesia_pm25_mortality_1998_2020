@@ -4,10 +4,12 @@
 #'
 #' @param file_exposure File path to exposure rasters
 #' @param file_tidy_geography File path to vector file of jurisdictional boundaries
+#' @param file_population File path to rasters of population density. Optional, for population weighting
 #' 
-#' @returns data.table of country_code, country_name, province (jurisdiction), year and exposure_baseline
+#' @returns data.table of country_code, country_name, province (jurisdiction), exposure_aggregation, year and exposure_baseline
 do_calc_exposure_by_geography <- function(file_exposure,
-                                          file_tidy_geography) {
+                                          file_tidy_geography,
+                                          file_population = NULL) {
   
   # Read and clean vector / raster data ####
   
@@ -36,22 +38,77 @@ do_calc_exposure_by_geography <- function(file_exposure,
   # double-check study boundaries are inside the raster
   stopifnot(all(terra::relate(v_reprojected, r_exposure, "within")))
   
-  # extract (mean aggregate), weighted by fraction of cell covered
-  e <- terra::extract(r_exposure, v_reprojected, weights = TRUE,
-                      fun = mean, na.rm = TRUE,
-                      ID = FALSE)
+  ### Without population provided ####
+  if (is.null(file_population)){
+    
+    # extract (mean aggregate), weighted by fraction of cell covered
+    e <- exactextractr::exact_extract(
+      r_exposure,
+      st_as_sf(v_reprojected),
+      "mean",
+      append_cols = c('country_name', 'country_code', 'province'),
+      progress = F
+    )
+    
+  } else {
+    ### With population density - pop-weighted and unweighted ####  
   
-  # attach to vector fields (jurisdictional names)
-  dat.exposure <- cbind(values(v),
-                        e)
-  setDT(dat.exposure)
+    #### Read population raster ####
+    r_population <- do.call(c, lapply(file_population, rast))
+    time(r_population) <- as.integer(gsub(".+pd_([0-9]{4})_.+", "\\1", basename(file_population)))
+    names(r_population) <- sprintf("pop_density_%i", time(r_population))
+    
+    # align population to exposure rasters with resample
+    r_population_aligned <- resample(r_population, r_exposure)
+    
+    # common time period
+    available_yys <- intersect(time(r_exposure), time(r_population_aligned))
+    
+    #### Extract pop-weighted and unweighted ####
+    e <- exactextractr::exact_extract(
+      r_exposure[[time(r_exposure) %in% available_yys]],
+      st_as_sf(v_reprojected),
+      c('mean', 'weighted_mean'),
+      weights = r_population_aligned,
+      default_weight = 0,
+      coverage_area = TRUE,
+      append_cols = c('country_name', 'country_code', 'province'),
+      progress = F
+    )
+    setDT(e)
+    
+    ## This is a terra-based alternative to calculate population-weighted means ####
+    #  but MUCH slower ####
+    # dat_pop.terra <- extract(r_population_aligned, v, fun = "sum", weights = T, na.rm = T, ID = F)
+    # dat_pop_exp.terra <- extract(r_exposure_aligned*r_population_aligned[[16]],
+    #                          v,
+    #                          fun = "sum",
+    #                          weights = T,
+    #                          na.rm = T,
+    #                          ID = F)
+    # dat.exp <- cbind(
+    # data.table(country_name = v$country_name, province = v$province), 
+    # dat_pop_exp.terra/dat_pop.terra)
+    # dat.exposure <- melt(dat.exp, id.vars = "province",
+    #                      variable.name = "year",
+    #                      variable.factor = F,
+    #                      value.name = "exposure_baseline")
+    # dat.exposure[, year := as.integer(year)]
+  }
+  
+  setDT(e)
   
   # melt to long format and tidy
-  dat.exposure <- melt(dat.exposure, id.vars = names(v), 
+  dat.exposure <- melt(e, 
+                       id.vars = intersect(names(v), names(e)), 
                        variable.name = "year", 
                        variable.factor = F,
                        value.name = "exposure_baseline")
-  dat.exposure[, year := as.integer(year)]
-
+  
+  dat.exposure[, exposure_aggregation := gsub("^(.+?)\\..+", "\\1", year)]
+  dat.exposure[, year := as.integer(gsub(".+([0-9]{4})$", "\\1", year))]
+  dat.exposure[exposure_aggregation == "weighted_mean", exposure_aggregation := "population-weighted mean"]
+  
+  setcolorder(dat.exposure, c("country_name", "country_code", "province", "exposure_aggregation", "year", "exposure_baseline"))
   return(dat.exposure)
 }

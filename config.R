@@ -1,6 +1,6 @@
 # Define key outputs ------------------------------------------------------
 # suffix identifier to output file names
-runDate <- "20250909"
+runID <- "20260611"
 
 outdir <- "data_derived"
 
@@ -18,6 +18,7 @@ yys_todo <- 1998:2020
 
 # Define input data paths -------------------------------------------------
 datadir <- "~/CARDAT/"
+# Geographical boundaries
 indir.geography <- file.path(
   datadir,
   "CAR_staging_area",
@@ -25,6 +26,7 @@ indir.geography <- file.path(
 )
 infile.geography <- "gadm404-levels.gpkg"
 
+# Mortality
 indir.mort <- file.path(
   datadir,
   "CAR_staging_area",
@@ -32,6 +34,14 @@ indir.mort <- file.path(
 )
 infile.mort <- "IHME-GBD_2021_DATA-SEA_all_cause_mortality.csv"
 
+# Population
+indir.pop <- file.path(
+  "data_provided",
+  "WorldPop_Population_Density/Global_2000_2020_1km/IDN/"
+)
+infile.pop <- list.files(indir.pop, pattern = "tif$")
+
+# Exposure
 indir.pm25 <- file.path(
   datadir,
   "Environment_General",
@@ -41,7 +51,8 @@ infile.pm25 <- sprintf("V5GL02.HybridPM25.Global.%04i01-%04i12.nc",
                        yys_todo,
                        yys_todo)
 
-infile.locname_map <- "metadata/ihme_gadm_locname_map.csv"
+#manually created mapping file of IHME province names, GADM province names (Indonesian and English)
+infile.locname_map <- "data_provided/ihme_gadm_locname_map.csv"
 
 # Output paths ------------------------------------------------------------
 outdirs <- list(data = "data_derived",
@@ -51,13 +62,14 @@ outdirs <- list(data = "data_derived",
 
 # PARAMETERS ------------------------------------------------------------
 
-## Counterfactual scenario ####
+# Exposure of interest ####
+exposure_label <- "pm25"
+
+# Counterfactual scenario ####
 counterfactual_scenario_type <- "abs" # absolute / relative / modelled CTM concentrations
 counterfactual_scenario <- 10
 
-
 # Relative risk ####
-
 # from WHO Health risks of air pollution in Europe (HRAPIE) project recommendations (https://iris.who.int/handle/10665/153692)
 # Published in Hoek, et al. (2013), available at https:/doi.org/10.1186/1476-069x-12-43
 rr <- c(1.062, 1.040, 1.083) 

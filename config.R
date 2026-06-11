@@ -1,6 +1,6 @@
 # Define key outputs ------------------------------------------------------
 # suffix identifier to output file names
-runID <- "20260611"
+runDate <- "20260611"
 
 outdir <- "data_derived"
 

@@ -1,0 +1,164 @@
+---
+title: "PM~2.5~ and all-cause mortality health impact assessment in Indonesia"
+date: today
+lightbox: true
+toc: true
+output: html
+---
+
+```{r setup, include=FALSE}
+library(targets)
+library(knitr)
+library(data.table)
+library(sf)
+library(ggplot2)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE)
+
+tar_load(data_combine_exposure_response)
+tar_load(data_mortality_burden)
+
+tar_load(data_combine_popw_exposure_response)
+tar_load(data_popw_mortality_burden)
+
+```
+
+## Health Impact Assessment
+
+### Inputs
+
+In Indonesia, the mean exposure to PM~2.5~ (for a subset of study years) is shown in @fig-exposure by province. Mortality counts are displayed in @fig-mortality.
+
+```{r}
+#| label: fig-exposure
+#| fig.cap: "Mean exposure by province."
+# path must be relative to the output html to show the plot
+# ignore the error while rendering (issue with root/working directory for pandoc vs output html)
+
+ggplot(unique(data_combine_exposure_response[, .(province, year, exposure_baseline)]), aes(x = year, y = exposure_baseline, col = province)) + 
+  geom_line() +
+  xlab("Year") +
+  ylab("Baseline PM2.5 exposure (ug/m3)")
+```
+
+```{r}
+#| label: fig-popw-exposure
+#| fig.cap: "Population-weighted mean exposure by province."
+# path must be relative to the output html to show the plot
+# ignore the error while rendering (issue with root/working directory for pandoc vs output html)
+
+ggplot(unique(data_combine_popw_exposure_response[, .(province, year, exposure_baseline)]), aes(x = year, y = exposure_baseline, col = province)) + 
+  geom_line() +
+  xlab("Year") +
+  ylab("Baseline Population-weighted PM2.5 exposure (ug/m3)")
+```
+
+```{r}
+#| label: fig-population
+#| fig.cap: "Population by province."
+ggplot(data_combine_exposure_response[, .(pop = sum(pop)), by = .(province, year)], aes(x = year, y = pop, col = province)) + 
+  geom_line() +
+  xlab("Year") +
+  ylab("Population")
+```
+
+```{r}
+#| label: fig-mortality
+#| fig.cap: "Mortality counts by province."
+ggplot(data_combine_exposure_response[, .(deaths = sum(number)), by = .(province, year)], aes(x = year, y = deaths, col = province)) + 
+  geom_line() +
+  xlab("Year") +
+  ylab("Deaths")
+```
+
+
+### Attributable number
+
+```{r}
+#| label: fig-attributable-number
+#| fig.cap: "Attributable deaths by province."
+ggplot(data_mortality_burden$burden[, .(attributable_deaths = sum(attributable_deaths)), by = .(province, year)], aes(x = year, y = attributable_deaths, col = province)) + 
+  geom_line() +
+
+  xlab("Year") +
+  ylab("Attributable number")
+```
+
+```{r}
+#| label: fig-popw-attributable-number
+#| fig.cap: "Attributable deaths with population-weighted exposure by province."
+ggplot(data_popw_mortality_burden$burden[, .(attributable_deaths = sum(attributable_deaths)), by = .(province, year)], aes(x = year, y = attributable_deaths, col = province)) + 
+  geom_line() +
+
+  xlab("Year") +
+  ylab("Attributable number of deaths (Population-weighted exposure)")
+```
+
+
+## Maps
+```{r}
+#| label: fig-map-attributable-number-popw
+#| fig.cap: "Map of attributable deaths given population-weighted PM2.5 exposure."
+#| fig.height: 10
+
+v <- st_read(tar_read(file_tidy_geography))
+v <- sf::st_simplify(v, dTolerance = 5000)
+
+v_an <- merge(v, data_popw_mortality_burden$burden[
+  , 
+  .(attributable_deaths = sum(attributable_deaths)), 
+  by = .(province, year)]
+  )
+
+ggplot(v_an, aes(fill = attributable_deaths)) + 
+  geom_sf() + 
+  facet_wrap(~ year, ncol = 3) +
+  scale_fill_stepsn(colours = c("grey", "red"), breaks = function(x) seq(min(x), max(x), 2500)
+                    )
+```
+
+## Session and version info
+
+```{r}
+#| label: session-info
+#| echo: true
+
+sessionInfo()
+```
+
+```{r}
+#| label: gis-library-info
+#| echo: true
+
+terra::libVersion()
+sf::sf_extSoftVersion()
+```
+
+### Targets status
+
+Targets network, with runtime and number of branches (if any) indicated.
+
+```{r targets_pipeline, out.width="100%"}
+# show targets network, only targets and exclude target rendering this document
+targets::tar_visnetwork(targets_only = T, 
+                        exclude = pipeline_status, 
+                        label = c("time", "branches"),
+                        reporter = "silent") |> 
+  visNetwork::visIgraphLayout("layout_with_kk", smooth = TRUE, physics = TRUE) |>
+  visNetwork::visPhysics(hierarchicalRepulsion = list(nodeDistance = 150))
+```
+
+```{r targets-meta}
+# show table of targets metadata (subsetted and more readable) and exclude branches (keep the patterns)
+meta <- tar_meta(fields = c("name", "type", "time", "seconds", "bytes", "format", "iteration"))
+meta$size_MB <- round(meta$bytes / 1000**2, 1)
+meta$run_s <- round(meta$seconds, 1)
+# do not show global objects, functions or individual branches
+meta <- meta[!meta$type %in% c("branch", "object", "function"), ]
+
+DT::datatable(meta[, c("name", "type", "iteration", "time", "run_s", "format", "size_MB")],
+              options = list(pageLength = 25, 
+                             order = list(c(1, "desc"),
+                                          c(0, "asc"))
+                             ), 
+              rownames = FALSE)
+```

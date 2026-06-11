@@ -1,0 +1,65 @@
+---
+title: "PM~2.5~ and all-cause mortality health impact assessment in Indonesia"
+subtitle: "Data Summary and Checks"
+date: today
+
+lightbox: true
+toc: true
+output: html
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(targets)
+library(knitr)
+library(data.table)
+library(sf)
+
+knitr::opts_chunk$set(message = FALSE)
+
+tar_load(data_combine_exposure_response)
+tar_load(data_mortality_burden)
+
+tar_load(data_combine_popw_exposure_response)
+tar_load(data_popw_mortality_burden)
+
+```
+
+### Summary of input data
+
+```{r}
+#| label: summary-input-data
+
+summary(data_combine_exposure_response)
+```
+
+```{r}
+#| label: str-input-data
+
+str(data_combine_exposure_response)
+```
+
+### Summary of HIA burden
+
+```{r}
+#| label: summary-mortality-burden
+
+summary(data_mortality_burden$burden)
+```
+```{r}
+#| label: str-mortality-burden
+
+str(data_mortality_burden$burden)
+```
+
+```{r}
+#| label: summary-popw-mortality-burden
+
+summary(data_mortality_burden$burden)
+```
+```{r}
+#| label: str-popw-mortality-burden
+
+str(data_popw_mortality_burden$burden)
+```

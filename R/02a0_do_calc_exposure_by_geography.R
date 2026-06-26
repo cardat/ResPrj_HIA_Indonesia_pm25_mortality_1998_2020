@@ -46,7 +46,7 @@ do_calc_exposure_by_geography <- function(file_exposure,
       r_exposure,
       st_as_sf(v_reprojected),
       "mean",
-      append_cols = c('country_name', 'country_code', 'province'),
+      append_cols = spatial_ID,
       progress = F
     )
     
@@ -72,7 +72,7 @@ do_calc_exposure_by_geography <- function(file_exposure,
       weights = r_population_aligned,
       default_weight = 0,
       coverage_area = TRUE,
-      append_cols = c('country_name', 'country_code', 'province'),
+      append_cols = spatial_ID,
       progress = F
     )
     setDT(e)
@@ -109,6 +109,6 @@ do_calc_exposure_by_geography <- function(file_exposure,
   dat.exposure[, year := as.integer(gsub(".+([0-9]{4})$", "\\1", year))]
   dat.exposure[exposure_aggregation == "weighted_mean", exposure_aggregation := "population-weighted mean"]
   
-  setcolorder(dat.exposure, c("country_name", "country_code", "province", "exposure_aggregation", "year", "exposure_baseline"))
+  setcolorder(dat.exposure, c(spatial_ID, "exposure_aggregation", "year", "exposure_baseline"))
   return(dat.exposure)
 }

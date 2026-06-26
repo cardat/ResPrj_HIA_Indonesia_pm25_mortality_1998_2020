@@ -1,6 +1,6 @@
 # Define key outputs ------------------------------------------------------
 # suffix identifier to output file names
-runDate <- "20260611"
+runDate <- "20260625"
 
 outdir <- "data_derived"
 
@@ -60,19 +60,46 @@ outdirs <- list(data = "data_derived",
                 qc = "qc")
 
 
-# PARAMETERS ------------------------------------------------------------
+# GLOBAL COLUMN IDENTIFIERS -------------------------------------------------------------
+spatial_ID <- c("province") # spatial study unit ID column(s) - unique, for joining
+
+# PARAMETERS --------------------------------------------------------------
 
 # Exposure of interest ####
 exposure_label <- "pm25"
 
-# Counterfactual scenario ####
-counterfactual_scenario_type <- "abs" # absolute / relative / modelled CTM concentrations
-counterfactual_scenario <- 10
+# Counterfactual scenarios ####
+counterfactuals_todo <- data.table::rbindlist(list(
+  list(
+    scenario = "WHO AQG level", 
+    scenario_type = "abs", # for counterfactual construction function
+    scenario_value = 5 # for counterfactual construction function
+  ),
+  list(
+    scenario = "WHO Interim Target 4", 
+    scenario_type = "abs",
+    scenario_value = 10
+  ),
+  list(
+    scenario = "WHO Interim Target 3", 
+    scenario_type = "abs",
+    scenario_value = 15
+  )
+))
+
+# counterfactual_scenario_type <- "abs" # absolute / relative / modelled CTM concentrations
+# counterfactual_scenario <- 10
 
 # Relative risk ####
 # from WHO Health risks of air pollution in Europe (HRAPIE) project recommendations (https://iris.who.int/handle/10665/153692)
 # Published in Hoek, et al. (2013), available at https:/doi.org/10.1186/1476-069x-12-43
-rr <- c(1.062, 1.040, 1.083) 
+
+# Table of relative risks with label
+# RRs from HRAPIE project, and upper (uci) and lower (lci) confidence intervals
+RRs_todo <- data.table::data.table(
+  label = c("rr_hrapie", "rr_hrapie_uci", "rr_hrapie_lci"),
+  value = c(1.062, 1.040, 1.083)
+)
 
 # relative risk per x units change
 units_rr_per <- 10

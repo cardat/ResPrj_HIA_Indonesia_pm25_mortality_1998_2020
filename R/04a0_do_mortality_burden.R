@@ -6,13 +6,17 @@
 #'
 #' @returns 
 do_mortality_burden <- function(
-  data_combine_exposure_response = data_combine_exposure_response
+  data_combine_exposure_response = data_combine_exposure_response,
+  relative_risk = relative_risk,
+  relative_risk_label = relative_risk_label
 ){
   # Prepare data ####
   # life tables are calculated based on one set of age groups (i.e. age groups from 0 to ... for a single province/sex/cause/year...)
   # so split into groupings (each group containing a full set of ages)
+  setDT(data_combine_exposure_response)
+  
   dat_groups <- split(data_combine_exposure_response, 
-                      by = c("country_code", "country_name", "province", "measure", "cause", "sex", "year")
+                      by = c(spatial_ID, "measure", "cause", "sex", "year")
   )
   
   # Burden calculations for each group ####
@@ -39,7 +43,7 @@ do_mortality_burden <- function(
       demog_data = demog_x, 
       min_age_at_risk = minimum_age_risk, 
       pm_concentration = demog_x[, delta],
-      RR = rr[1], 
+      RR = relative_risk, 
       unit = units_rr_per
     )
     
@@ -51,7 +55,7 @@ do_mortality_burden <- function(
       demog_data = demog_x,
       min_age_at_risk = minimum_age_risk, 
       pm_concentration = demog_x[, delta],
-      RR = rr[1], 
+      RR = relative_risk, 
       unit = units_rr_per
     )
     
@@ -61,7 +65,7 @@ do_mortality_burden <- function(
                                      life_expectancy = dat_le$impacted[, "ex"])
     
     ## Combine neatly for output ####
-    base_output <- x[, .(country_code, country_name, province, measure, sex, age, cause, year)]
+    base_output <- x[, .SD, .SDcols = c(spatial_ID, "measure", "sex", "age", "cause", "year")]
     dat_burden_x <- cbind(base_output, data.table( 
                           attributable_deaths = dat_an,
                           years_of_life_lost = dat_yll,
@@ -85,5 +89,10 @@ do_mortality_burden <- function(
   dat_life_tables <- list(baseline = rbindlist(lapply(dat_burden_group, `[[`, "baseline_life_table")),
                           impacted = rbindlist(lapply(dat_burden_group, `[[`, "impacted_life_table")))
   
-  return(list(burden = dat_burden, life_tables = dat_life_tables))
+  return(list(scenario = c(relative_risk_label = relative_risk_label,
+                           relative_risk = relative_risk,
+                           scenario = unique(data_combine_exposure_response$counterfactual_scenario)
+                           ), 
+              burden = dat_burden, 
+              life_tables = dat_life_tables))
 }

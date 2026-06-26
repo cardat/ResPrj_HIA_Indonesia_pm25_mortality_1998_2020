@@ -13,6 +13,7 @@
 #'    - province
 #'    - year
 #'    - exposure_baseline (exposure level at baseline scenario)
+#'    - counterfactual_scenario (label to identify counterfactual scenario)
 #'    - counterfactual (exposure level of counterfactual scenario)
 #'    - delta (difference between counterfactual and baseline)
 #'    - measure (response measure label)
@@ -34,22 +35,25 @@ do_combine_exposure_response <- function(
   dt_map <- fread(file_mapping)
   
   # Merge ####
-  # Keep GADM names for output, discard IHME names
-  # IHME - location
-  # GADM - country_name, province
+  # Keep spatial unit ID column(s) only
   
   # merge on mortality and population
   dt_combined_mort_pop <- data_tidy_mortality[data_tidy_mortality_pop, on = .NATURAL, nomatch = NULL]
   
   # Combine Counterfactual (also containing baseline exposure) with mapping
-  dt_exposure_response <- data_construct_counterfactual[dt_map, on = .(country_name, province), location := i.location]
+  dt_combined_exposure_response <- copy(data_construct_counterfactual)
+  dt_combined_exposure_response[dt_map, on = spatial_ID, location := i.location]
   # attach on mortality/pop data
-  dt_exposure_response <- dt_exposure_response[dt_combined_mort_pop, on = .(location = province, year), nomatch = NULL]
+  dt_combined_exposure_response <- dt_combined_exposure_response[dt_combined_mort_pop, 
+                                                                 on = c("location" = spatial_ID, "year"), 
+                                                                 allow.cartesian = T,
+                                                                 nomatch = NULL]
   
   # drop IHME location name
-  dt_exposure_response[, location := NULL]
-  # subset to study years
-  dt_exposure_response <- dt_exposure_response[year %in% yys_todo]
+  dt_combined_exposure_response[, location := NULL]
   
-  return(dt_exposure_response)
+  # # subset to study years
+  # dt_combined_exposure_response <- dt_combined_exposure_response[year %in% yys_todo]
+  
+  return(dt_combined_exposure_response)
 }

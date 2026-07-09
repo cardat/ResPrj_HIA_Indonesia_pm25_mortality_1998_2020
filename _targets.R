@@ -229,18 +229,18 @@ list(
   # 
   
   # TIDY OUTPUT ---------------------------------------------------------------
-  tar_target(summarise_mortality_results,
-             do_summarise_mortality_results(
+  tar_target(tidy_mortality_results,
+             do_tidy_mortality_results(
                data_mortality_burden,
                outdir = "data_derived/mortality"
              ), 
              format = "file"),
-  tar_target(summarise_popw_mortality_results,
-             do_summarise_mortality_results(
+  tar_target(tidy_popw_mortality_results,
+             do_tidy_mortality_results(
                data_popw_mortality_burden,
                outdir = "data_derived/mortality_popw_exp"
              ), 
-             format = "file"),
+             format = "file")#,
   
   # VISUALISE ------------------------------------------------------------
  
@@ -299,14 +299,14 @@ list(
   
   ## report ####
   # render an Rmarkdown report of the HIA
-  tar_quarto(report_summary, 
-             "report/report_summary.qmd", 
-             quiet = F
-             ),
-  tar_quarto(report_qc, 
-             "report/report_qc.qmd", 
-             quiet = F
-  )
+  # tar_quarto(report_summary, 
+  #            "report/report_summary.qmd", 
+  #            quiet = F
+  #            ),
+  # tar_quarto(report_qc, 
+  #            "report/report_qc.qmd", 
+  #            quiet = F
+  # )
   
   
   

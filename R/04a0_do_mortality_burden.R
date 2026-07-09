@@ -67,11 +67,11 @@ do_mortality_burden <- function(
     ## Combine neatly for output ####
     base_output <- x[, .SD, .SDcols = c(spatial_ID, "measure", "sex", "age", "cause", "year")]
     dat_burden_x <- cbind(base_output, data.table( 
-                          attributable_deaths = dat_an,
-                          years_of_life_lost = dat_yll,
-                          diff_life_expectancy = dat_le$difference$ex_diff,
-                          diff_life_years_lived = dat_le$difference$ly_diff,
-                          diff_number_of_deaths = dat_le$difference$dx_diff
+                          an = dat_an,
+                          yll = dat_yll,
+                          ex_diff = dat_le$difference$ex_diff,
+                          ly_diff = dat_le$difference$ly_diff,
+                          dx_diff = dat_le$difference$dx_diff
                           ))
     
     dat_lifet_baseline_x <- cbind(base_output, subset(dat_le$baseline, select = -age))

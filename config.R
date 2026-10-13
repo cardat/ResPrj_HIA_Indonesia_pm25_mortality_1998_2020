@@ -17,7 +17,8 @@ out.hia_life_tables <- file.path(outdir, sprintf("IDN_life_tables_%s.csv", runDa
 yys_todo <- 1998:2020
 
 # Define input data paths -------------------------------------------------
-datadir <- "~/CARDAT/"
+datadir_staging <- "~/../OneDrive - Curtin/cloud-car-dat_staging"
+datadir <- "~/../Nextcloud/Shared/"
 # Geographical boundaries
 indir.geography <- file.path(
   datadir,
@@ -28,18 +29,28 @@ infile.geography <- "gadm404-levels.gpkg"
 
 # Mortality
 indir.mort <- file.path(
-  datadir,
-  "CAR_staging_area",
+  datadir_staging,
   "IHME_GBD_2021/IHME_GBD_2021_all_cause_mortality_SEA_1998_2021/data_provided/"
 )
 infile.mort <- "IHME-GBD_2021_DATA-SEA_all_cause_mortality.csv"
 
-# Population
+# Total modelled population raster
 indir.pop <- file.path(
   "data_provided",
   "WorldPop_Population_Density/Global_2000_2020_1km/IDN/"
 )
 infile.pop <- list.files(indir.pop, pattern = "tif$")
+
+# Modelled population by province, age and sex (IHME)
+indir.pop.age_sex_male <- file.path(
+  datadir_staging, "IHME_GBD_2023/IHME_GBD_2023_population_IDN_1998_2023/data_provided"
+  )
+infile.pop.age_sex_male <- "IHME-GBD_2023_DATA_IDN_population_male_1998_2023.csv"
+  
+indir.pop.age_sex_female <- file.path(
+  datadir_staging, "IHME_GBD_2021/IHME_GBD_2021_population_IDN_1998_2021/data_provided"
+)
+infile.pop.age_sex_female <- "IHME-GBD_2021_DATA_IDN_population_female_1998_2021.csv"
 
 # Exposure
 indir.pm25 <- file.path(

@@ -4,7 +4,7 @@
 ## using data from 
 ##     Atmospheric Composition Analysis Group (ACAG) Global PM2.5 (Satellite-derived PM2.5)
 ##     GADM (administrative boundaries)
-##     IHME (all-cause mortality, also derived population)
+##     IHME (all-cause mortality, also population)
 ## 
 ## 
 ##
@@ -37,6 +37,13 @@ tar_option_set(
 
 # TARGETS #
 list(
+  # Configuration of Scenarios
+  tar_target(file_scenarios,
+             "scenarios.csv",
+             format = "file"),
+  tar_target(scenarios,
+             fread(file_scenarios)),
+  
   # DATA INPUTS -------------------------------------------------------------
   
   # Mortality (+ derived population)
@@ -44,6 +51,12 @@ list(
              file.path(indir.mort, infile.mort),
              format = "file", 
              description = "Mortality data"),
+  # Population (modelled by province, age, sex)
+  tar_target(file_population_age_sex, c(
+    file.path(indir.pop.age_sex_male, infile.pop.age_sex_male),
+    file.path(indir.pop.age_sex_female, infile.pop.age_sex_female)
+  ), format = "file"), 
+  
   # Population rasters
   tar_target(file_population,
              file.path(indir.pop, infile.pop),
@@ -89,6 +102,13 @@ list(
              description = "Derive, clean and reformat population data from mortality rates",
              do_tidy_mortality_pop(data_tidy_mortality = data_tidy_mortality)
              ),
+  
+  ### data_tidy_population_age_sex ####
+  tar_target(data_tidy_population_age_sex,
+             description = "Clean modelled population by age and sex",
+             do_tidy_population_age_sex(file_population_age_sex = file_population_age_sex)
+  ),
+  
   
   ## Base Exposure ####
   ### data_calc_exposure_by_geography ####
@@ -221,11 +241,13 @@ list(
   
   #### Impact of exposure and cessation ####
   # Calculation of impact from iomlifetR package
-  # tar_target(data_popw_impact,
-  #            do_mortality_impact(
-  #              data_combine_exposure_response = data_combine_popw_exposure_response
-  #            ),
-  # ),
+  tar_target(data_popw_impact,
+             do_mortality_impact(
+               data_combine_exposure_response = data_combine_popw_exposure_response,
+               data_tidy_population_age_sex = data_tidy_population_age_sex
+             ),
+             pattern = map(data_combine_popw_exposure_response),
+  ),
   # 
   
   # TIDY OUTPUT ---------------------------------------------------------------

@@ -1,10 +1,11 @@
-#' do_combine_exposure_response
+#' do_combined_exposure_response
 #'
 #' Combine baseline exposure, counterfactual exposure, population and mortality data into single data.table
 #'
 #' @param data_tidy_mortality Target name of cleaned mortality data
 #' @param data_tidy_mortality_pop Target name of cleaned population data
-#' @param data_construct_counterfactual Target name of counterfactual exposure
+#' @param data_baseline_exposure Target name of baseline exposure
+#' @param data_counterfactual_exposure Target name of counterfactual exposure
 #' @param file_mapping File path to csv with mapping of jurisdictional names as provided in different data sources (geographic boundaries, mortality, population) - for standardising naming and merging
 #'
 #' @returns data.table with geographical identifiers, year, exposure and counterfactual (and delta), then mortality and population by sex and age:
@@ -24,11 +25,11 @@
 #'    - rate (mortality rate)
 #'    - pop (population count)
 
-do_combine_exposure_response <- function(
+do_combined_exposure_response <- function(
     data_tidy_mortality,
     data_tidy_mortality_pop,
-    data_calc_exposure_by_geography,
-    data_construct_counterfactual,
+    data_baseline_exposure,
+    data_counterfactual_exposure,
     file_mapping){
   
   ## read mapping of GADM and IHME location names
@@ -41,7 +42,7 @@ do_combine_exposure_response <- function(
   dt_combined_mort_pop <- data_tidy_mortality[data_tidy_mortality_pop, on = .NATURAL, nomatch = NULL]
   
   # Combine Counterfactual (also containing baseline exposure) with mapping
-  dt_combined_exposure_response <- copy(data_construct_counterfactual)
+  dt_combined_exposure_response <- copy(data_counterfactual_exposure)
   dt_combined_exposure_response[dt_map, on = spatial_ID, location := i.location]
   # attach on mortality/pop data
   dt_combined_exposure_response <- dt_combined_exposure_response[dt_combined_mort_pop, 

@@ -1,11 +1,12 @@
 do_mortality_impact <- function(
-  data_combine_exposure_response = data_combine_popw_exposure_response,
-  data_tidy_population_age_sex = data_tidy_population_age_sex
+  data_combined_exposure_response = data_combined_exposure_response,
+  data_tidy_population_age_sex = data_tidy_population_age_sex,
+  relative_risk
 ){
-  setDT(data_combine_exposure_response)
+  setDT(data_combined_exposure_response)
   setDT(data_tidy_population_age_sex)
   
-  ls_data <- split(data_combine_exposure_response[, .(year, province, sex, age, pop, number, delta)],
+  ls_data <- split(data_combined_exposure_response[, .(year, province, sex, age_group, pop, number, delta)],
                    by = c("year", "province", "sex"))
 
   impact <- lapply(ls_data, function(x){
@@ -13,13 +14,10 @@ do_mortality_impact <- function(
     stopifnot(nrow(unique(x[, .(year, province, sex)])) == 1)
     
     demog_x <- data_tidy_population_age_sex[location == unique(x$province) & year == unique(x$year) & sex == unique(x$sex),
-                                            .(age, population = pop_count)]
-    demog_x[, age_group_5yr := sprintf("%i-%i years", (age %/% 5)*5,
-                                       (age %/% 5)*5 + 4)]
-    demog_x[age %between% c(0, 4), age_group_5yr := "<5 years"]
-    demog_x[age == 95, age_group_5yr := "95+ years"]
+                                            .(age, age_group_5yr = age %/% 5 * 5, population = pop_count)]
     
-    deaths_interpolated <- merge(x[, .(age_group_5yr = age, deaths_5yr = number)],
+    
+    deaths_interpolated <- merge(x[, .(age_group_5yr = age_group, deaths_5yr = number)],
                                  demog_x,
                                  by = "age_group_5yr")
     
@@ -53,8 +51,11 @@ do_mortality_impact <- function(
     no_lag <- iomlifetR::impact(
       demog_x[, .(age, population, deaths)],
       min_age_at_risk = minimum_age_risk,
-      RR = RRs_todo[1, value],
-      unit = units_rr_per
+      RR = relative_risk$RR,
+      unit = relative_risk$per_unit_change
     )
-    
+    return(no_lag)
+  })
+  
+  return(impact)
 }

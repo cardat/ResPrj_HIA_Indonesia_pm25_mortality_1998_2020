@@ -8,7 +8,7 @@
 do_tidy_mortality_pop <- function(data_tidy_mortality){
   
   # Calculate from IHME estimates - may be replaced with census data if available
-  dat <- data_tidy_mortality[, .(pop = number / (rate/100000)), by = .(measure, province, sex, age, cause, year)]
+  dat <- data_tidy_mortality[, .(pop = number / (rate/100000)), by = .(measure, province, sex, age_group, cause, year)]
   
   return(dat)
 }

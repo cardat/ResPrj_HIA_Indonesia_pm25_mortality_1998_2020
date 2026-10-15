@@ -2,20 +2,21 @@
 #'
 #' Calculate mortality burden (as attributable number, change in life expectancy and years of life lost) with iomlifetR package
 #'
-#' @param data_combine_exposure_response Target name - data.table of combined exposure, counterfactual and response data by province, age, sex, etc.
+#' @param data_combined_exposure_response Target name - data.table of combined exposure, counterfactual and response data by province, age, sex, etc.
+#' @param relative_risk Single row table with label, relative risk value, units per change and theoretical minimum risk
 #'
 #' @returns 
 do_mortality_burden <- function(
-  data_combine_exposure_response = data_combine_exposure_response,
-  relative_risk = relative_risk,
-  relative_risk_label = relative_risk_label
+  data_combined_exposure_response = data_combined_exposure_response,
+  relative_risk = relative_risk
 ){
+  
   # Prepare data ####
   # life tables are calculated based on one set of age groups (i.e. age groups from 0 to ... for a single province/sex/cause/year...)
   # so split into groupings (each group containing a full set of ages)
-  setDT(data_combine_exposure_response)
+  setDT(data_combined_exposure_response)
   
-  dat_groups <- split(data_combine_exposure_response, 
+  dat_groups <- split(data_combined_exposure_response, 
                       by = c(spatial_ID, "measure", "cause", "sex", "year")
   )
   
@@ -24,13 +25,10 @@ do_mortality_burden <- function(
     # x <- dat_groups[[200]]
     
     # demographic data must be contain fields 'age' (with beginning age of age group), 'population' and 'deaths'.
-    demog_x <- x[, .(age = age,
+    demog_x <- x[, .(age = age_group,
                      population = pop,
                      deaths = number,
                      delta = delta)]
-    demog_x[, age := as.character(age)]
-    demog_x[age == "<5 years", age := "0-5 years"]
-    demog_x[, age := as.integer(gsub("([0-9]+).+", "\\1", age))]
     
     # check
     # age ordered sequentially?
@@ -43,8 +41,8 @@ do_mortality_burden <- function(
       demog_data = demog_x, 
       min_age_at_risk = minimum_age_risk, 
       pm_concentration = demog_x[, delta],
-      RR = relative_risk, 
-      unit = units_rr_per
+      RR = relative_risk$RR, 
+      unit = relative_risk$per_unit_change
     )
     
     
@@ -55,8 +53,8 @@ do_mortality_burden <- function(
       demog_data = demog_x,
       min_age_at_risk = minimum_age_risk, 
       pm_concentration = demog_x[, delta],
-      RR = relative_risk, 
-      unit = units_rr_per
+      RR = relative_risk$RR, 
+      unit = relative_risk$per_unit_change
     )
     
     ## Calculate years of life lost ####
@@ -65,7 +63,7 @@ do_mortality_burden <- function(
                                      life_expectancy = dat_le$impacted[, "ex"])
     
     ## Combine neatly for output ####
-    base_output <- x[, .SD, .SDcols = c(spatial_ID, "measure", "sex", "age", "cause", "year")]
+    base_output <- x[, .SD, .SDcols = c(spatial_ID, "measure", "sex", "age_group", "cause", "year")]
     dat_burden_x <- cbind(base_output, data.table( 
                           an = dat_an,
                           yll = dat_yll,
@@ -89,9 +87,9 @@ do_mortality_burden <- function(
   dat_life_tables <- list(baseline = rbindlist(lapply(dat_burden_group, `[[`, "baseline_life_table")),
                           impacted = rbindlist(lapply(dat_burden_group, `[[`, "impacted_life_table")))
   
-  return(list(scenario = c(relative_risk_label = relative_risk_label,
-                           relative_risk = relative_risk,
-                           scenario = unique(data_combine_exposure_response$counterfactual_scenario)
+  return(list(scenario = c(relative_risk_label = relative_risk$RR_label,
+                           relative_risk = relative_risk$RR,
+                           scenario = unique(data_combined_exposure_response$counterfactual_scenario)
                            ), 
               burden = dat_burden, 
               life_tables = dat_life_tables))

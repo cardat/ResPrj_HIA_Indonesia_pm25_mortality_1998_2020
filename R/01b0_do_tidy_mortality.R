@@ -24,7 +24,13 @@ do_tidy_mortality <- function(file_mortality){
                      "95+ years")
   dat2 <- dat2[sex %in% c("Male", "Female") &
                     age %in% sel_agegroups]
-  dat2[, age := factor(age, levels = sel_agegroups)]
+  # Age groups as factor, new column with starting age of each bracket
+  dat2[, age_group_label := factor(age, levels = sel_agegroups)]
+  dat2[, age_group := as.integer(gsub("^([0-9]+).+", "\\1", age))]
+  dat2[age_group_label == "<5 years", age_group := 0]
+  
+  dat2[, age := NULL]
+  stopifnot(!is.na(dat2[, .(age_group, age_group_label)]))
 
   # cast mortality number (count) and rate
   dat3 <- data.table::dcast(dat2, as.formula("... ~ metric"), value.var = c("val"))

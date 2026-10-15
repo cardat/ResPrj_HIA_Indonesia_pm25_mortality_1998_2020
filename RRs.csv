@@ -1,0 +1,4 @@
+RR_label,RR,per_unit_change,theoretical_minimum_risk
+HRAPIE,1.062,10,0
+HRAPIE_CI_lower,1.04,10,0
+HRAPIE_CI_upper,1.083,10,0

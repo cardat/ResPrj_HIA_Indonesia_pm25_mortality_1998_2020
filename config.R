@@ -80,23 +80,23 @@ spatial_ID <- c("province") # spatial study unit ID column(s) - unique, for join
 exposure_label <- "pm25"
 
 # Counterfactual scenarios ####
-counterfactuals_todo <- data.table::rbindlist(list(
-  list(
-    scenario = "WHO AQG level", 
-    scenario_type = "abs", # for counterfactual construction function
-    scenario_value = 5 # for counterfactual construction function
-  ),
-  list(
-    scenario = "WHO Interim Target 4", 
-    scenario_type = "abs",
-    scenario_value = 10
-  ),
-  list(
-    scenario = "WHO Interim Target 3", 
-    scenario_type = "abs",
-    scenario_value = 15
-  )
-))
+# counterfactuals_todo <- data.table::rbindlist(list(
+#   list(
+#     scenario = "WHO AQG level", 
+#     scenario_type = "abs", # for counterfactual construction function
+#     scenario_value = 5 # for counterfactual construction function
+#   ),
+#   list(
+#     scenario = "WHO Interim Target 4", 
+#     scenario_type = "abs",
+#     scenario_value = 10
+#   ),
+#   list(
+#     scenario = "WHO Interim Target 3", 
+#     scenario_type = "abs",
+#     scenario_value = 15
+#   )
+# ))
 
 # counterfactual_scenario_type <- "abs" # absolute / relative / modelled CTM concentrations
 # counterfactual_scenario <- 10
@@ -107,14 +107,10 @@ counterfactuals_todo <- data.table::rbindlist(list(
 
 # Table of relative risks with label
 # RRs from HRAPIE project, and upper (uci) and lower (lci) confidence intervals
-RRs_todo <- data.table::data.table(
-  label = c("rr_hrapie", "rr_hrapie_uci", "rr_hrapie_lci"),
-  value = c(1.062, 1.040, 1.083)
-)
-
-# relative risk per x units change
-units_rr_per <- 10
-theoretical_minimum_risk <- 0
+# RRs_todo <- data.table::data.table(
+#   label = c("rr_hrapie", "rr_hrapie_uci", "rr_hrapie_lci"),
+#   value = c(1.062, 1.040, 1.083)
+# )
 
 # minimum age at risk
 minimum_age_risk <- 30

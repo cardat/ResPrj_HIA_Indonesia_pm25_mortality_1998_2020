@@ -19,7 +19,7 @@ viz_mortality_impact <- function(
                  value.name = "value")
   
   # cast the confidence intervals
-  dat_aggregated <- dcast(dat.v2, ... ~ RR, value.var = "value")
+  dat_aggregated <- dcast(dat.v2, formula = "... ~ RR", value.var = "value")
   setnames(dat_aggregated, names(dat_aggregated), gsub("HRAPIE", "value", names(dat_aggregated)))
   
   # set factor levels

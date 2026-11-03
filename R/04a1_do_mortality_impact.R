@@ -6,15 +6,29 @@ do_mortality_impact <- function(
   setDT(data_combined_exposure_response)
   setDT(data_tidy_population_age_sex)
   
-  ls_data <- split(data_combined_exposure_response[, .(year, province, sex, age_group, pop, number, delta)],
-                   by = c("year", "province", "sex"))
+  ## aggregate across sex
+  # Exposure-reponse
+  data_combined_exposure_response.aggregated <- data_combined_exposure_response[, .(pop = sum(pop), number = sum(number)), 
+                                                                                by = .(year, province, age_group, delta)]
+  # 1yr group populations
+  data_tidy_population_age_sex.aggregated <- data_tidy_population_age_sex[, .(pop_count = sum(pop_count)), by = .(province, year, age)]
+  
+  # tidy population data, ready to merge
+  data_tidy_population_age_sex.aggregated
+  
+  
+  
+  ls_data <- split(data_combined_exposure_response.aggregated,
+                   by = c("year", "province"))
 
+  t1 <- Sys.time()
   impact <- lapply(ls_data, function(x){
     # demographic data must be contain fields 'age' (with beginning age of age group), 'population' and 'deaths'.
-    stopifnot(nrow(unique(x[, .(year, province, sex)])) == 1)
+    stopifnot(nrow(unique(x[, .(year, province)])) == 1)
     
-    demog_x <- data_tidy_population_age_sex[location == unique(x$province) & year == unique(x$year) & sex == unique(x$sex),
-                                            .(age, age_group_5yr = age %/% 5 * 5, population = pop_count)]
+    demog_x <- data_tidy_population_age_sex.aggregated[
+      province == unique(x$province) & year == unique(x$year),
+      .(age, age_group_5yr = age %/% 5 * 5, population = pop_count)]
     
     
     deaths_interpolated <- merge(x[, .(age_group_5yr = age_group, deaths_5yr = number)],
@@ -24,21 +38,6 @@ do_mortality_impact <- function(
     # Assume UNIFORMLY distributed deaths in age group
     deaths_interpolated[, deaths := deaths_5yr/.N, by = .(age_group_5yr)]
     setorder(deaths_interpolated, age)
-    
-    ####### This is a spline version... ############
-    # deaths_interpolated[, deaths_splined := spline(deaths_5yr,
-    #                                                xout = age)$y]
-    # splining_prep <- deaths_interpolated[, .(age = mean(age), deaths = deaths_5yr/.N), by = .(age_group_5yr, deaths_5yr)]
-    # a <- spline(splining_prep$age,
-    #             splining_prep$deaths,
-    #             xout = 0:95)
-    # 
-    # deaths_interpolated[, deaths_splined := a$y]
-    # plot(deaths_interpolated$age, deaths_interpolated$deaths_5yr)
-    # points(deaths_interpolated$age, deaths_interpolated$deaths, col = "blue")
-    # points(deaths_interpolated$age, deaths_interpolated$deaths_splined, col = "red")
-    # 
-    # deaths_interpolated[, .(sum(deaths_splined)), by = .(age_group_5yr, deaths_5yr)]
     
     demog_x <- deaths_interpolated[, .(age, population, deaths = deaths)]
     setorder(demog_x, age)
@@ -50,12 +49,42 @@ do_mortality_impact <- function(
     # needs to be single year for lm.fit, fails with 5yr age groups
     no_lag <- iomlifetR::impact(
       demog_x[, .(age, population, deaths)],
+      delta_pm = unique(x$delta),
       min_age_at_risk = minimum_age_risk,
       RR = relative_risk$RR,
       unit = relative_risk$per_unit_change
     )
+    
+    # cat(paste(unique(x$year), unique(x$province),"\n"))
     return(no_lag)
   })
+  t2 <- Sys.time()
+  cat(t2-t1)
   
-  return(impact)
+  impact_collated <- lapply(impact, function(x) {
+    x_collated <- lapply(seq_along(x), function(i) {
+      dat <- as.data.table(x[[i]], keep.rownames = T)
+      setnames(dat, "rn", "age")
+      dat2 <- melt(
+        dat,
+        id.vars = "age",
+        variable.name = "year",
+        variable.factor = F,
+        value.name = names(x)[i]
+      )
+      
+      dat2[, names(.SD) := lapply(.SD, as.integer), .SDcols = is.character]
+      return(dat2)
+    })
+    Reduce(merge, x_collated)
+  })
+  
+  impact_collated <- rbindlist(impact_collated, idcol = "set")
+  impact_collated[, `:=`(exposure_pop_year = as.integer(gsub("^([0-9]{4}).+", "\\1", set)),
+                         province = gsub("^[0-9]{4}\\.", "", set),
+                         set = NULL)]
+  impact_collated[, `:=`(counterfactual_scenario = unique(data_combined_exposure_response$counterfactual_scenario),
+                         RR = relative_risk$RR_label)]
+  
+  return(impact_collated)
 }

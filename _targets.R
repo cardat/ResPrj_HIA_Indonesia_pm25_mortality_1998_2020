@@ -11,6 +11,7 @@
 #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 library(targets)
+library(crew)
 library(tarchetypes)
 
 # Define global variables -------------------------------------------------
@@ -32,6 +33,10 @@ tar_option_set(
                "ggplot2"),
   workspace_on_error = TRUE,
   error = "continue"
+)
+
+tar_option_set(
+  controller = crew_controller_local(workers = 5)
 )
 
 # TARGETS #
@@ -118,7 +123,8 @@ list(
   
   ### data_tidy_population_age_sex ####
   tar_target(data_tidy_population_age_sex,
-             do_tidy_population_age_sex(file_population_age_sex = file_population_age_sex)
+             do_tidy_population_age_sex(file_population_age_sex = file_population_age_sex,
+                                        file_mapping = file_mapping)
   ),
   
   # ANALYSIS ---------------------------------------------------------------
@@ -202,7 +208,7 @@ list(
                data_tidy_population_age_sex = data_tidy_population_age_sex,
                relative_risk = list_RRs
              ),
-             pattern = cross(data_combined_exposure_response, list_RRs),
+             pattern = cross(slice(data_combined_exposure_response, 1), list_RRs),
   ),
   
   ## Bespoke burden calculations ####

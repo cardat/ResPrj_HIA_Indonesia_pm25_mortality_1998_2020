@@ -5,7 +5,8 @@
 #' @param  File path to raw population data
 #'
 #' @returns data.table of population data with fields province, sex, age, year, number (count)
-do_tidy_population_age_sex <- function(file_population_age_sex){
+do_tidy_population_age_sex <- function(file_population_age_sex,
+                                       file_mapping){
   
   # Subset data to relevant columns and rows ####
   dat <- rbindlist(lapply(file_population_age_sex, fread))
@@ -61,12 +62,16 @@ do_tidy_population_age_sex <- function(file_population_age_sex){
                 measure = NULL,
                 metric = NULL)]
   
+  # Fix the province - use GADM names
+  mapping <- fread(file_mapping)
+  dat.v2[mapping, on = .(location), province := i.province]
+  
   ## standardise the headings and fix col order
   setnames(dat.v2,
            names(dat.v2),
            tolower(names(dat.v2)))
-  setcolorder(dat.v2, c("location", "sex", "age", "year"))
-  setorder(dat.v2, location, sex, age, year)
+  setcolorder(dat.v2, c("province", "sex", "age", "year"))
+  setorder(dat.v2, province, sex, age, year)
   setnames(dat.v2, c("val", "upper", "lower"), c("pop_count", "pop_count_upper", "pop_count_lower"))
   
   return(dat.v2)

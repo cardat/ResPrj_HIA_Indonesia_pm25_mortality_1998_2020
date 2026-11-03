@@ -1,16 +1,13 @@
 # Define key outputs ------------------------------------------------------
 # suffix identifier to output file names
-runDate <- "20260625"
+runDate <- function() return(strftime(Sys.Date(), "%Y%m%d"))
 
 outdir <- "data_derived"
+figdir <- "figures_and_tables"
 
 # geographical boundaries and combined input data
-out.geography <- file.path(outdir, sprintf("IDN_provinces_%s.gpkg", runDate))
-out.combined_data <- file.path(outdir, sprintf("IDN_combined_data_%s.csv", runDate))
-
-# final HIA output
-out.hia_an <- file.path(outdir, sprintf("IDN_attributable_number_%s.csv", runDate))
-out.hia_life_tables <- file.path(outdir, sprintf("IDN_life_tables_%s.csv", runDate))
+out.geography <- file.path(outdir, sprintf("IDN_provinces_%s.gpkg", runDate()))
+out.combined_data <- file.path(outdir, sprintf("IDN_combined_data_%s.csv", runDate()))
 
 # Define parameters -------------------------------------------------------
 # YEARS - range between 1998 and 2020 (years of obtained data)

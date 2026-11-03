@@ -235,59 +235,46 @@ list(
                data_mortality_impact,
                outdir = "data_derived"
              ),
-             format = "file")#,
+             format = "file"),
   
   # VISUALISE ------------------------------------------------------------
  
-  # ### Plot these years in faceted data maps
-  # tar_target(qc_yy,
-  #            2015:2020),
-  # 
-  # ## fig_map_inputs ####
-  # # Population, mortality, exposure
-  # tar_target(fig_map_inputs,
-  #            viz_map_inputs(
-  #              data_combine_exposure_response = data_combine_exposure_response,
-  #              file_tidy_geography = file_tidy_geography,
-  #              yy = 2020,
-  #              outdir = outdirs$figs_tabs
-  #            ),
-  #            format = "file",),
-  # ## fig_map_inputs_facet ####
-  # # Population, mortality, exposure
-  # tar_target(fig_map_inputs_facet,
-  #            viz_map_inputs_facet(
-  #              data_combine_exposure_response = data_combine_exposure_response,
-  #              file_tidy_geography = file_tidy_geography,
-  #              yy = qc_yy,
-  #              outdir = outdirs$figs_tabs
-  #            ),
-  #            format = "file"),
-  # 
-  # ## fig_map_attributable_number_alt ####
-  # ### from manual calcalation of attributable number
-  # tar_target(fig_map_attributable_number_alt,
-  #            viz_map_attributable_number_alt(
-  #              data_attributable_number_alt = data_attributable_number_alt,
-  #              file_tidy_geography = file_tidy_geography,
-  #              yy = qc_yy,
-  #              outdir = outdirs$figs_tabs
-  #            ),
-  #            format = "file"
-  # ),
-  # 
-  # ## fig_map_attributable_number ####
-  # ### from iomlifetR function for attributable number
-  # tar_target(fig_map_attributable_number,
-  #            viz_map_attributable_number(
-  #              data_combine_exposure_response = data_combine_exposure_response, 
-  #              data_attributable_number = data_attributable_number,
-  #              file_tidy_geography = file_tidy_geography,
-  #              yy = qc_yy,
-  #              outdir = outdirs$figs_tabs
-  #            ),
-  #            format = "file"
-  # ),
+  ### Plot these years in faceted data maps
+  tar_target(qc_yy,
+             2015),
+
+  ## fig_map_exposure_response ####
+  # Population, mortality, exposure
+  tar_target(fig_map_exposure_response,
+             viz_map_exposure_response(
+               data_combined_exposure_response = data_combined_exposure_response,
+               file_tidy_geography = file_tidy_geography,
+               yy = qc_yy,
+               outdir = figdir
+             ),
+             format = "file",),
+  
+  ## fig_map_mortality_attributable ####
+  ### from iomlifetR function for attributable number
+  tar_target(fig_map_mortality_attributable,
+             viz_map_mortality_attributable(
+               data_attributable_number = data_attributable_number,
+               file_tidy_geography = file_tidy_geography,
+               yy = qc_yy,
+               outdir = figdir
+             ),
+             format = "file"
+  ),
+  
+  ## fig_mortality_impact ####
+  tar_target(fig_mortality_impact,
+             viz_mortality_impact(
+               data_mortality_impact = data_mortality_impact,
+               yy = qc_yy,
+               outdir = figdir
+             ),
+             format = "file"
+  )#,
   
 
   # REPORTS --------------------------------------------------------------

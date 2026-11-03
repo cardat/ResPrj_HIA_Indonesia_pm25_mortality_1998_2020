@@ -44,11 +44,11 @@ output_mortality_burden <- function(
   if(!dir.exists(outdir)) dir.create(outdir, recursive = T)
   
   outf_burden <- file.path(outdir, 
-                           sprintf("mortality_burden_%s.csv", runDate))
+                           sprintf("mortality_burden_%s.csv", runDate()))
   fwrite(combined_burden, outf_burden)
   
   outf_life_tables <- file.path(outdir, 
-                                sprintf("mortality_lifetables_%s.csv", runDate))
+                                sprintf("mortality_lifetables_%s.csv", runDate()))
   fwrite(combined_life_tables, outf_life_tables)
   
   return(c(

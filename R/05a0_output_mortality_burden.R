@@ -1,5 +1,7 @@
-do_tidy_mortality_results <- function(data_mortality_burden, 
-                                           outdir = "data_derived"){
+output_mortality_burden <- function(
+    data_mortality_burden,
+    outdir = "data_derived") {
+  
   
   tbl_scenario_rr <- rbindlist(lapply(data_mortality_burden, function(i) as.list(i[["scenario"]])))
   

@@ -196,7 +196,8 @@ list(
       data_combined_exposure_response = data_combined_exposure_response,
       relative_risk = list_RRs
     ),
-    pattern = cross(data_combined_exposure_response, list_RRs)
+    pattern = cross(data_combined_exposure_response, list_RRs),
+    iteration = "list"
   ),
 
   ### data_mortality_impact ####
@@ -219,21 +220,21 @@ list(
                data_combined_exposure_response = data_combined_exposure_response,
                relative_risk = list_RRs
              ),
-             pattern = cross(data_combined_exposure_response, list_RRs))
+             pattern = cross(data_combined_exposure_response, list_RRs)),
   
   # # TIDY OUTPUT ---------------------------------------------------------------
-  # tar_target(tidy_mortality_results,
-  #            do_tidy_mortality_results(
-  #              data_mortality_burden,
-  #              outdir = "data_derived/mortality"
-  #            ), 
-  #            format = "file"),
-  # tar_target(tidy_popw_mortality_results,
-  #            do_tidy_mortality_results(
-  #              data_popw_mortality_burden,
-  #              outdir = "data_derived/mortality_popw_exp"
-  #            ), 
-  #            format = "file")#,
+  tar_target(out_mortality_burden,
+             output_mortality_burden(
+               data_mortality_burden,
+               outdir = "data_derived"
+             ),
+             format = "file"),
+  tar_target(out_mortality_impact,
+             output_mortality_impact(
+               data_mortality_impact,
+               outdir = "data_derived"
+             ),
+             format = "file")#,
   
   # VISUALISE ------------------------------------------------------------
  

@@ -1,10 +1,13 @@
 do_mortality_impact <- function(
   data_combined_exposure_response = data_combined_exposure_response,
   data_tidy_population_age_sex = data_tidy_population_age_sex,
-  relative_risk
+  relative_risk,
+  reference_year
 ){
   setDT(data_combined_exposure_response)
   setDT(data_tidy_population_age_sex)
+  
+  data_combined_exposure_response <- data_combined_exposure_response[year == reference_year]
   
   ## aggregate across sex
   # Exposure-reponse

@@ -207,9 +207,10 @@ list(
              do_mortality_impact(
                data_combined_exposure_response = data_combined_exposure_response,
                data_tidy_population_age_sex = data_tidy_population_age_sex,
-               relative_risk = list_RRs
+               relative_risk = list_RRs,
+               reference_year = 2015
              ),
-             pattern = cross(slice(data_combined_exposure_response, 1), list_RRs),
+             pattern = cross(data_combined_exposure_response, list_RRs),
   ),
   
   ## Bespoke burden calculations ####
